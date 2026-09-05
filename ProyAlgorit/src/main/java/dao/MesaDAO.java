@@ -1,7 +1,10 @@
 package dao;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import model.Mesa;
 public class MesaDAO {
-    public boolean actualizar(){
+    public boolean actualizar(Mesa mesa){
         String sql = "UPDATE mesas SET estado = ? WHERE numero_mesa= ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement pst = conn.prepareStatement(sql)
@@ -16,5 +19,15 @@ public class MesaDAO {
             System.out.println("Error al Actualizar Mesa: " + e.getMessage());
             return false;
         }
+    }
+    public List<Mesa> listarTodas(){
+        List<Mesa> mesas = new ArrayList<>();
+        return mesas;
+    }
+    public Mesa buscarPorNumero(int numero){
+        return null;
+    }
+    public boolean insertar(Mesa mesa){
+        return false;//cambiar
     }
 }
