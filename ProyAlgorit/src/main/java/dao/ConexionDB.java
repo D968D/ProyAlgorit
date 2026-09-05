@@ -15,7 +15,6 @@ public class ConexionDB {
 
         } catch (Exception e) {
             System.out.println("Error de conexion: " + e.getMessage());
-
         }
         return con;
     }
