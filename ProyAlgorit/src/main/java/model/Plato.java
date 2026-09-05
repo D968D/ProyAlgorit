@@ -17,7 +17,7 @@ public class Plato {
         this.stock = stock;
     }
 
-    // Getters y Setters
+
     public String getCodigoPlato() { return codigoPlato; }
     public void setCodigoPlato(String codigoPlato) { this.codigoPlato = codigoPlato; }
 
@@ -37,5 +37,4 @@ public class Plato {
     public String toString() {
         return codigoPlato + " - " + nombre + " S/ " + precio;
     }
-}
 }

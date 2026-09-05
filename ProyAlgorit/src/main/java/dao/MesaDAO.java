@@ -6,8 +6,8 @@ public class MesaDAO {
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement pst = conn.prepareStatement(sql)
         ) {
-            pst.setString(1, );
-            pst.setInt(2, );
+            pst.setString(1, "a");
+            pst.setInt(2, 3);
 
             pst.executeUpdate();
             return true;

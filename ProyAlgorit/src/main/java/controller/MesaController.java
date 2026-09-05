@@ -19,4 +19,12 @@ public class MesaController {
     private void actualizar(){
 
     }
+
+    private void libre(){
+
+    }
+
+    private void ocupado(){
+
+    }
 }

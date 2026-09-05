@@ -4,9 +4,9 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 public class MesaView extends JFrame {
 
-    public JButton btnActualizar = new JButton();
-    public JButton btnLibre = new JButton();
-    public JButton btnOcupado = new JButton();
+    public JButton btnActualizar = new JButton("ACTUALIZAR");
+    public JButton btnLibre = new JButton("LIBRE");
+    public JButton btnOcupado = new JButton("OCUPADO");
 
     public DefaultTableModel modeloTabla = new DefaultTableModel(new String[]{"ID","Capacidad","Estado"},0);
 
