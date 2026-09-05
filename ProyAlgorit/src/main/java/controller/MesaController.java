@@ -1,34 +1,24 @@
 package controller;
 import java.util.List;
 import model.Mesa;
-import view.FrmMesas;
-import view.FrmMesas;
 import dao.MesaDAO;
 public class MesaController {
-    private final Mesa[] mesas = new Mesa[10];
-    private MesaDAO dao = new MesaDAO();
-    private int cantidad=0;
-    private FrmMesas view;
+    private final MesaDAO dao = new MesaDAO();
 
     public MesaController() {
     }
-    public MesaController(FrmMesas view){
-        this.view = view;
-        view.setVisible(true);
-    }
 
     public boolean actualizar(Mesa mesa){
-        return false;//cambiar
+        return dao.actualizar(mesa);
     }
 
     public boolean insertar(Mesa mesa){
-        return false;//cambiar
+        return dao.insertar(mesa);
     }
     public List<Mesa> listarTodas(){
-
-        return null;
+        return dao.listarTodas();
     }
     public Mesa buscarPorNumero(int numero){
-        return null;
+        return dao.buscarPorNumero(numero);
     }
 }

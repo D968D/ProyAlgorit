@@ -67,6 +67,9 @@ public class FrmMesas extends JFrame {
     private void cargarTabla() {
         modelo.setRowCount(0);
         List<Mesa> lista = cont.listarTodas();
+        if (lista == null) {
+            return;
+        }
         for (Mesa m : lista) {
             modelo.addRow(new Object[]{
                 m.getNumMesa(),
@@ -84,6 +87,11 @@ public class FrmMesas extends JFrame {
 
         int numero = Integer.parseInt(modelo.getValueAt(filaSeleccionada, 0).toString());
         Mesa mesa = cont.buscarPorNumero(numero);
+        if (mesa == null) {
+            JOptionPane.showMessageDialog(this, "No se encontró la mesa seleccionada");
+            cargarTabla();
+            return;
+        }
 
         // Diálogo estilo de la imagen
         JDialog dialogo = new JDialog(this, "Cambiar Estado", true);
