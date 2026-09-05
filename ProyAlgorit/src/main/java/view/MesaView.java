@@ -36,4 +36,5 @@ public class MesaView extends JFrame {
         botones.add(btnOcupado);
         add(botones,BorderLayout.CENTER);
     }
+    
 }
