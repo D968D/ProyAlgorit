@@ -22,6 +22,26 @@ public class MesaDAO {
     }
     public List<Mesa> listarTodas(){
         List<Mesa> mesas = new ArrayList<>();
+        String sql = "SELECT * FROM mesas";
+
+        try (
+            Connection conn = ConexionDB.getConexion();
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql)
+        ) {
+            while (rs.next()) {
+                Mesa m = new Mesa(
+                    rs.getInt("numero_mesa"),
+                    rs.getInt("capacidad"),
+                    rs.getString("estado")
+                );
+                mesas.add(m);
+                
+            }
+        } catch (Exception e) {
+            System.out.println("Error al listar mesas: " + e.getMessage());
+            return null;
+        }
         return mesas;
     }
     public Mesa buscarPorNumero(int numero){

@@ -1,6 +1,6 @@
 package view;
 
-import dao.MesaDAO;
+import controller.MesaController;
 import model.Mesa;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -11,7 +11,7 @@ public class FrmMesas extends JFrame {
 
     private JTable tabla;
     private DefaultTableModel modelo;
-    private MesaDAO dao = new MesaDAO();
+    private MesaController cont = new MesaController();
     private int filaSeleccionada = -1;
 
     public FrmMesas() {
@@ -66,7 +66,7 @@ public class FrmMesas extends JFrame {
 
     private void cargarTabla() {
         modelo.setRowCount(0);
-        List<Mesa> lista = dao.listarTodas();
+        List<Mesa> lista = cont.listarTodas();
         for (Mesa m : lista) {
             modelo.addRow(new Object[]{
                 m.getNumMesa(),
@@ -83,7 +83,7 @@ public class FrmMesas extends JFrame {
         }
 
         int numero = Integer.parseInt(modelo.getValueAt(filaSeleccionada, 0).toString());
-        Mesa mesa = dao.buscarPorNumero(numero);
+        Mesa mesa = cont.buscarPorNumero(numero);
 
         // Diálogo estilo de la imagen
         JDialog dialogo = new JDialog(this, "Cambiar Estado", true);
@@ -99,7 +99,7 @@ public class FrmMesas extends JFrame {
 
         btnLibre.addActionListener(e -> {
             mesa.setEstado("Libre");
-            if (dao.actualizar(mesa)) {
+            if (cont.actualizar(mesa)) {
                 cargarTabla();
                 dialogo.dispose();
             }
@@ -107,7 +107,7 @@ public class FrmMesas extends JFrame {
 
         btnOcupado.addActionListener(e -> {
             mesa.setEstado("Ocupada");
-            if (dao.actualizar(mesa)) {
+            if (cont.actualizar(mesa)) {
                 cargarTabla();
                 dialogo.dispose();
             }
@@ -136,7 +136,7 @@ public class FrmMesas extends JFrame {
                     Integer.parseInt(txtCapacidad.getText()),
                     "Libre"
                 );
-                if (dao.insertar(m)) {
+                if (cont.insertar(m)) {
                     JOptionPane.showMessageDialog(this, "Mesa registrada");
                     cargarTabla();
                 }
