@@ -1,18 +1,16 @@
 package controller;
 
 import model.Mesa;
-import view.MesaView;
+import view.FrmMesas;
+import view.FrmMesas;
 
 public class MesaController {
     private final Mesa[] mesas = new Mesa[10];
     private int cantidad=0;
-    private MesaView view;
+    private FrmMesas view;
 
-    public MesaController(MesaView view){
+    public MesaController(FrmMesas view){
         this.view = view;
-        view.btnActualizar.addActionListener(e->actualizar());
-        view.btnLibre.addActionListener(e->libre());
-        view.btnOcupado.addActionListener(e->ocupado());
         view.setVisible(true);
     }
 
