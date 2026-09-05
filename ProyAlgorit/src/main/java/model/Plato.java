@@ -17,7 +17,6 @@ public class Plato {
         this.stock = stock;
     }
 
-
     public String getCodigoPlato() { return codigoPlato; }
     public void setCodigoPlato(String codigoPlato) { this.codigoPlato = codigoPlato; }
 
