@@ -1,20 +1,24 @@
 package model;
+
 public class Mesa {
-    private int numMesa;
+
+    
+    private int numeroMesa;
     private int capacidad;
-    private String estado;
-    public Mesa(int numMesa, int capacidad, String estado){
-        this.numMesa = numMesa;
+    private String estado; 
+
+    public Mesa(int numeroMesa, int capacidad, String estado) {
+        this.numeroMesa = numeroMesa;
         this.capacidad = capacidad;
         this.estado = estado;
     }
 
-    public int getNumMesa() {
-        return numMesa;
+    public int getNumeroMesa() {
+        return numeroMesa;
     }
 
-    public void setNumMesa(int numMesa) {
-        this.numMesa = numMesa;
+    public void setNumeroMesa(int numeroMesa) {
+        this.numeroMesa = numeroMesa;
     }
 
     public int getCapacidad() {
@@ -31,5 +35,10 @@ public class Mesa {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    @Override
+    public String toString() {
+        return "Mesa " + numeroMesa + " (cap. " + capacidad + ") - " + estado;
     }
 }
