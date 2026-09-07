@@ -23,13 +23,13 @@ public class EstadoDialog extends JDialog {
             estadoSeleccionado = "LIBRE";
             dispose();
         });
+
         btnOcupado.addActionListener(e -> {
             estadoSeleccionado = "OCUPADO";
             dispose();
         });
     }
-
-   
+    
     public String getEstadoSeleccionado() {
         return estadoSeleccionado;
     }
