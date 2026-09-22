@@ -3,7 +3,6 @@ package estructura;
 import model.Mesa;
 import java.util.Arrays;
 
-
 public class ArregloMesas {
 
     private final Mesa[] mesas;
@@ -16,19 +15,20 @@ public class ArregloMesas {
         this.cantidad = 0;
     }
 
+    /** Insercion */
     public boolean insertar(Mesa mesa) {
         if (cantidad >= capacidadMaxima) {
-            return false; 
+            return false; // arreglo lleno
         }
         if (buscarPorNumero(mesa.getNumeroMesa()) != null) {
-            return false; 
+            return false; // ya existe esa mesa
         }
         mesas[cantidad] = mesa;
         cantidad++;
         return true;
     }
 
-
+    /** Busqueda lineal */
     public Mesa buscarPorNumero(int numeroMesa) {
         for (int i = 0; i < cantidad; i++) {
             if (mesas[i] != null && mesas[i].getNumeroMesa() == numeroMesa) {
@@ -38,7 +38,7 @@ public class ArregloMesas {
         return null;
     }
 
-  
+    /** Actualizacion */
     public boolean actualizarEstado(int numeroMesa, String nuevoEstado) {
         Mesa mesa = buscarPorNumero(numeroMesa);
         if (mesa == null) {
@@ -48,7 +48,7 @@ public class ArregloMesas {
         return true;
     }
 
-
+    /** Eliminacion logica: no se borra el dato, se marca como INACTIVA */
     public boolean eliminarLogico(int numeroMesa) {
         Mesa mesa = buscarPorNumero(numeroMesa);
         if (mesa == null) {
@@ -58,7 +58,7 @@ public class ArregloMesas {
         return true;
     }
 
-
+    /** Recorrido: devuelve solo las mesas activas (no eliminadas logicamente) */
     public Mesa[] recorrer() {
         Mesa[] activas = new Mesa[cantidad];
         int idx = 0;
@@ -71,7 +71,7 @@ public class ArregloMesas {
         return Arrays.copyOf(activas, idx);
     }
 
-
+    /** Copia: genera un arreglo independiente con los mismos datos */
     public ArregloMesas copiar() {
         ArregloMesas copia = new ArregloMesas(this.capacidadMaxima);
         for (int i = 0; i < this.cantidad; i++) {
@@ -82,6 +82,7 @@ public class ArregloMesas {
         return copia;
     }
 
+    /** Comparacion: compara dos arreglos de mesas y dice si tienen la misma configuracion */
     public boolean compararConfiguracion(ArregloMesas otro) {
         if (this.cantidad != otro.cantidad) {
             return false;

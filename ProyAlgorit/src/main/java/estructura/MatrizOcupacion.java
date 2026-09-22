@@ -3,7 +3,6 @@ package estructura;
 import model.Mesa;
 import java.util.Arrays;
 
-
 public class MatrizOcupacion {
 
     private final String[] zonas;
@@ -19,7 +18,10 @@ public class MatrizOcupacion {
         }
     }
 
- 
+    /**
+     * Recarga la matriz a partir del arreglo de mesas.
+     * La mesa numero N se ubica en zona = (N-1)/mesasPorZona, columna = (N-1)%mesasPorZona
+     */
     public void cargarDesdeMesas(Mesa[] mesas) {
         for (Mesa mesa : mesas) {
             if (mesa == null) {
@@ -42,7 +44,7 @@ public class MatrizOcupacion {
         return estados;
     }
 
-   
+    /** Representacion en texto de la matriz, util para depurar o mostrar en consola */
     public String mostrar() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < zonas.length; i++) {

@@ -10,10 +10,6 @@ import view.MesaView;
 import javax.swing.*;
 import java.util.List;
 
-// ANTES: el metodo actualizar() estaba vacio ("private void actualizar(){ }")
-// y la clase no cargaba ninguna mesa a la tabla ni usaba las estructuras
-// de datos del Capitulo 4. Se completo todo el flujo:
-// Base de datos -> Arreglo (ArregloMesas) -> Matriz de zonas -> Tabla (interfaz).
 public class MesaController {
 
     private static final int CAPACIDAD_MAXIMA = 20;

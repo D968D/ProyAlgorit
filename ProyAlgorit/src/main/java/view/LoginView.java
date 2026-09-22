@@ -1,16 +1,13 @@
 package view;
 
-import controller.MesaController;
 import dao.LoginDAO;
-
 import javax.swing.*;
 import java.awt.*;
-
 
 public class LoginView extends JFrame {
 
     private final JTextField txtUsuario = new JTextField(15);
-    private final JPasswordField txtContraseña = new JPasswordField(15);
+    private final JPasswordField txtContrasena = new JPasswordField(15);
     private final JButton btnIngresar = new JButton("Ingresar");
     private final LoginDAO loginDAO = new LoginDAO();
 
@@ -34,7 +31,7 @@ public class LoginView extends JFrame {
         gbc.gridy = 1;
         add(new JLabel("Contraseña:"), gbc);
         gbc.gridx = 1;
-        add(txtContraseña, gbc);
+        add(txtContrasena, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -46,10 +43,10 @@ public class LoginView extends JFrame {
 
     private void intentarLogin() {
         String usuario = txtUsuario.getText().trim();
-        String contra = new String(txtContraseña.getPassword());
+        String contra = new String(txtContrasena.getPassword());
 
         if (usuario.isEmpty() || contra.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "administrador 1234.");
+            JOptionPane.showMessageDialog(this, "Debe ingresar usuario y contraseña.");
             return;
         }
 
@@ -57,8 +54,8 @@ public class LoginView extends JFrame {
 
         if (valido) {
             dispose();
-            MesaView mesaView = new MesaView();
-            new MesaController(mesaView);
+            // Después del login se abre el menú principal (Mesas + Platos)
+            new MenuPrincipal().setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this,
                     "Usuario o contraseña incorrectos.",

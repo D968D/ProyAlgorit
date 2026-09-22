@@ -2,10 +2,9 @@ package model;
 
 public class Mesa {
 
-    
     private int numeroMesa;
     private int capacidad;
-    private String estado; 
+    private String estado; // "LIBRE" u "OCUPADO"
 
     public Mesa(int numeroMesa, int capacidad, String estado) {
         this.numeroMesa = numeroMesa;

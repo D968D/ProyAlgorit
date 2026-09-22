@@ -34,7 +34,6 @@ public class MesaDAO {
         return lista;
     }
 
- 
     public boolean actualizarEstado(int numeroMesa, String nuevoEstado) {
         String sql = "UPDATE mesas SET estado = ? WHERE numero_mesa = ?";
 
@@ -53,6 +52,7 @@ public class MesaDAO {
         }
     }
 
+    /** Insercion de una mesa nueva (util para las pruebas del Capitulo 13) */
     public boolean insertar(Mesa mesa) {
         String sql = "INSERT INTO mesas (numero_mesa, capacidad, estado) VALUES (?, ?, ?)";
 

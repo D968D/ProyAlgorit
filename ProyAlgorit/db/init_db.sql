@@ -1,8 +1,20 @@
+-- =========================================================
+-- Script adaptado a PostgreSQL / pgAdmin
+-- (el original del informe Avance 1 estaba en sintaxis de SQL Server:
+--  IDENTITY, NVARCHAR, MONEY, DATETIME2, etc. Aqui esta el equivalente
+--  en PostgreSQL para que corra tal cual en pgAdmin)
+-- =========================================================
+
+-- 1) Crea la base de datos (ejecuta esta linea sola, desde la base "postgres")
+-- CREATE DATABASE cordonrosadb;
+
+-- 2) Conectate a "cordonrosadb" en pgAdmin y luego ejecuta todo lo de abajo.
+
 CREATE TABLE usuarios (
     idusuario   SERIAL PRIMARY KEY,
     nombre      VARCHAR(100) NOT NULL,
     username    VARCHAR(50) NOT NULL UNIQUE,
-    contraseña  VARCHAR(260) NOT NULL,   
+    "contraseña" VARCHAR(260) NOT NULL,  -- con eñe: en el codigo Java se escribe entre comillas dobles
     rol         VARCHAR(30)
 );
 
@@ -38,11 +50,14 @@ CREATE TABLE detalle_pedido (
     observacion VARCHAR(250)
 );
 
+-- =========================================================
+-- Datos de prueba (para que al ejecutar la aplicacion ya
+-- aparezca algo en la tabla, igual que en tu imagen de ejemplo)
+-- =========================================================
 
-
-INSERT INTO usuarios (nombre, username, contraseña, rol) VALUES
+INSERT INTO usuarios (nombre, username, "contraseña", rol) VALUES
 ('Administrador', 'admin', '123456', 'ADMINISTRADOR'),
-('Michelle', 'michelle', '123456', 'CAMARERO(A)');
+('Michelle', 'michelle', '123456', 'ESTANDAR');
 
 INSERT INTO mesas (numero_mesa, capacidad, estado) VALUES
 (1, 4, 'LIBRE'),
