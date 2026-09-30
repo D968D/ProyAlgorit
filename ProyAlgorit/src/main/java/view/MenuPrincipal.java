@@ -6,28 +6,37 @@ import controller.PlatoController;
 import javax.swing.*;
 import java.awt.*;
 
+import static view.UIStyle.*;
+
 public class MenuPrincipal extends JFrame {
 
     public MenuPrincipal() {
         setTitle("C&R OrderManager - Menú Principal");
-        setSize(420, 260);
+        setSize(440, 420);
+        setMinimumSize(new Dimension(400, 380));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new BorderLayout());
 
-        JLabel titulo = new JLabel("Cordon y la Rosa", SwingConstants.CENTER);
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        titulo.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(FONDO_EXTERNO);
+        root.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JPanel panelBotones = new JPanel(new GridLayout(3, 1, 10, 12));
-        panelBotones.setBorder(BorderFactory.createEmptyBorder(10, 60, 30, 60));
+        RoundedPanel card = new RoundedPanel(22, CREMA);
+        card.setLayout(new BorderLayout());
+        card.add(headerBar("EL CORDÓN Y LA ROSA", "Sistema de Gestión de Pedidos · Ica, Perú"), BorderLayout.NORTH);
 
-        JButton btnMesas  = new JButton("Gestión de Mesas");
-        JButton btnPlatos = new JButton("Gestión de Platos");
-        JButton btnSalir  = new JButton("Salir");
+        JPanel panelBotones = new JPanel(new GridLayout(3, 1, 0, 16));
+        panelBotones.setBackground(CREMA);
+        panelBotones.setBorder(BorderFactory.createEmptyBorder(32, 50, 34, 50));
 
-        btnMesas.setPreferredSize(new Dimension(200, 40));
-        btnPlatos.setPreferredSize(new Dimension(200, 40));
+        RoundedButton btnMesas  = button("GESTIÓN DE MESAS", VERDE_OLIVA, VERDE_HOVER);
+        RoundedButton btnPlatos = button("GESTIÓN DE PLATOS", NARANJA, NARANJA_HOVER);
+        RoundedButton btnSalir  = button("SALIR", TAUPE, TAUPE_HOVER);
+
+        for (JButton b : new JButton[]{btnMesas, btnPlatos, btnSalir}) {
+            b.setPreferredSize(new Dimension(220, 46));
+        }
 
         btnMesas.addActionListener(e -> {
             MesaView mesaView = new MesaView();
@@ -45,7 +54,8 @@ public class MenuPrincipal extends JFrame {
         panelBotones.add(btnPlatos);
         panelBotones.add(btnSalir);
 
-        add(titulo, BorderLayout.NORTH);
-        add(panelBotones, BorderLayout.CENTER);
+        card.add(panelBotones, BorderLayout.CENTER);
+        root.add(card, BorderLayout.CENTER);
+        setContentPane(root);
     }
 }

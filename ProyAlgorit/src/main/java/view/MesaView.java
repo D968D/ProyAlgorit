@@ -4,35 +4,52 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
+import static view.UIStyle.*;
+
 public class MesaView extends JFrame {
 
-    public final JButton btnActualizar = new JButton("Actualizar");
+    public final JButton btnActualizar = button("ACTUALIZAR", NARANJA, NARANJA_HOVER);
     public final DefaultTableModel modeloTabla;
     public final JTable tabla;
 
     public MesaView() {
-        setTitle("GESTION DE MESAS - C&R OrderManager");
-        setSize(500, 350);
+        setTitle("Gestión de Mesas - C&R OrderManager");
+        setSize(560, 420);
+        setMinimumSize(new Dimension(480, 360));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        modeloTabla = new DefaultTableModel(new String[]{"Numero mesa", "Capacidad", "Estado"}, 0) {
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(FONDO_EXTERNO);
+        root.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        RoundedPanel card = new RoundedPanel(22, CREMA);
+        card.setLayout(new BorderLayout(0, 12));
+        card.add(headerBar("Gestión de Mesas", "Disponibilidad y capacidad del salón"), BorderLayout.NORTH);
+
+        modeloTabla = new DefaultTableModel(new String[]{"N° Mesa", "Capacidad", "Estado"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // la tabla es solo de lectura, se edita con el boton Actualizar
+                return false; // la tabla es solo de lectura, se edita con el botón Actualizar
             }
         };
         tabla = new JTable(modeloTabla);
-        tabla.setRowHeight(24);
+        styleTable(tabla);
 
-        JPanel panelBotones = new JPanel();
+        JScrollPane scroll = new JScrollPane(tabla);
+        scroll.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 24));
+        scroll.getViewport().setBackground(Color.WHITE);
+        card.add(scroll, BorderLayout.CENTER);
+
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 16));
+        panelBotones.setBackground(CREMA);
+        btnActualizar.setPreferredSize(new Dimension(170, 40));
         panelBotones.add(btnActualizar);
-        btnActualizar.setBackground(new Color(178,255,255));
-        btnActualizar.setForeground(new Color(0,0,0));
+        card.add(panelBotones, BorderLayout.SOUTH);
 
-        add(new JScrollPane(tabla), BorderLayout.CENTER);
-        add(panelBotones, BorderLayout.SOUTH);
+        root.add(card, BorderLayout.CENTER);
+        setContentPane(root);
     }
 
     public int getFilaSeleccionada() {
