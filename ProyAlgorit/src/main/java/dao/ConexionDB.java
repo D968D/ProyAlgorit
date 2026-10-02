@@ -1,6 +1,7 @@
 package dao;
 
-import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -8,27 +9,27 @@ import java.util.Properties;
 
 public class ConexionDB {
 
-    private static String url = "jdbc:postgresql://restaurante-db.canoy6a4yl8c.us-east-1.rds.amazonaws.com:5432/cordonrosadb";
-    private static String user = "postgres";
-    private static String pass = "algortimos123";
-
-    static {
-        try (InputStream in = ConexionDB.class.getClassLoader()
-                .getResourceAsStream("db.properties")) {
-            if (in != null) {
-                Properties p = new Properties();
-                p.load(in);
-                url = p.getProperty("db.url", url);
-                user = p.getProperty("db.user", user);
-                pass = p.getProperty("db.password", pass);
-            }
-        } catch (Exception e) {
-            System.err.println("No se pudo leer db.properties, se usan valores por defecto.");
-        }
-    }
-
     public static Connection getConexion() throws SQLException {
-        return DriverManager.getConnection(url, user, pass);
+        Connection conn = null;
+        Properties config = new Properties();
+        try (FileInputStream fis = new FileInputStream("ProyAlgorit/.env")) {
+            
+            config.load(fis);
+            
+            String url = config.getProperty("DB_URL");
+            String user = config.getProperty("DB_USER");
+            String pass = config.getProperty("DB_PASSWORD");
+
+            conn = DriverManager.getConnection(url, user, pass);
+            
+        } catch (IOException e) {
+            System.err.println("Error: No se encontró el archivo .env en la raíz del proyecto.");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.err.println("Error de SQL: Credenciales incorrectas o la base de datos está apagada.");
+            e.printStackTrace();
+        }
+        return conn;
     }
 
     public static void closeConexion(Connection conn) {
