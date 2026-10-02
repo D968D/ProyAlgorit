@@ -12,8 +12,8 @@ public class MenuPrincipal extends JFrame {
 
     public MenuPrincipal() {
         setTitle("C&R OrderManager - Menú Principal");
-        setSize(440, 420);
-        setMinimumSize(new Dimension(400, 380));
+        setSize(440, 500);
+        setMinimumSize(new Dimension(400, 460));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -26,15 +26,16 @@ public class MenuPrincipal extends JFrame {
         card.setLayout(new BorderLayout());
         card.add(headerBar("EL CORDÓN Y LA ROSA", "Sistema de Gestión de Pedidos · Ica, Perú"), BorderLayout.NORTH);
 
-        JPanel panelBotones = new JPanel(new GridLayout(3, 1, 0, 16));
+        JPanel panelBotones = new JPanel(new GridLayout(4, 1, 0, 16));
         panelBotones.setBackground(CREMA);
         panelBotones.setBorder(BorderFactory.createEmptyBorder(32, 50, 34, 50));
 
-        RoundedButton btnMesas  = button("GESTIÓN DE MESAS", VERDE_OLIVA, VERDE_HOVER);
-        RoundedButton btnPlatos = button("GESTIÓN DE PLATOS", NARANJA, NARANJA_HOVER);
-        RoundedButton btnSalir  = button("SALIR", TAUPE, TAUPE_HOVER);
+        RoundedButton btnMesas    = button("GESTIÓN DE MESAS", IconoVector.Tipo.MESA, VERDE_OLIVA, VERDE_HOVER);
+        RoundedButton btnPlatos   = button("GESTIÓN DE PLATOS", IconoVector.Tipo.PLATO, NARANJA, NARANJA_HOVER);
+        RoundedButton btnReservas = button("GESTIÓN DE RESERVAS", IconoVector.Tipo.RESERVA, TERRACOTA, TERRACOTA_HOVER);
+        RoundedButton btnSalir    = button("SALIR", IconoVector.Tipo.SALIR, TAUPE, TAUPE_HOVER);
 
-        for (JButton b : new JButton[]{btnMesas, btnPlatos, btnSalir}) {
+        for (JButton b : new JButton[]{btnMesas, btnPlatos, btnReservas, btnSalir}) {
             b.setPreferredSize(new Dimension(220, 46));
         }
 
@@ -48,14 +49,18 @@ public class MenuPrincipal extends JFrame {
             new PlatoController(platoView);
         });
 
+        btnReservas.addActionListener(e -> new ReservaView().setVisible(true));
+
         btnSalir.addActionListener(e -> System.exit(0));
 
         panelBotones.add(btnMesas);
         panelBotones.add(btnPlatos);
+        panelBotones.add(btnReservas);
         panelBotones.add(btnSalir);
 
         card.add(panelBotones, BorderLayout.CENTER);
         root.add(card, BorderLayout.CENTER);
         setContentPane(root);
+        activarEscalado(this);
     }
 }

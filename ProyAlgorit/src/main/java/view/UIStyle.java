@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
@@ -51,7 +53,76 @@ public final class UIStyle {
         return new RoundedButton(text, base, hover);
     }
 
-    /** Aplica una apariencia moderna y coherente a cualquier JTable del sistema. */
+    public static RoundedButton button(String text, IconoVector.Tipo icono, Color base, Color hover) {
+        RoundedButton b = new RoundedButton(text, base, hover);
+        b.setIcon(new IconoVector(icono, 20));
+        b.setIconTextGap(10);
+        b.setHorizontalTextPosition(SwingConstants.RIGHT);
+        return b;
+    }
+
+
+    public static void activarEscalado(JFrame frame) {
+        final int baseW = Math.max(1, frame.getWidth());
+        final int baseH = Math.max(1, frame.getHeight());
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                double rw = frame.getWidth() / (double) baseW;
+                double rh = frame.getHeight() / (double) baseH;
+
+                double escala = Math.min(Math.sqrt(rw * rh), rw);
+                escala = Math.max(1.0, Math.min(escala, 2.5));
+                escalar(frame.getContentPane(), escala);
+                frame.getContentPane().revalidate();
+                frame.getContentPane().repaint();
+            }
+        });
+    }
+
+    private static void escalar(Component c, double escala) {
+        if (c instanceof JComponent jc) {
+            if (jc.getClientProperty("baseFont") == null && jc.getFont() != null) {
+                jc.putClientProperty("baseFont", jc.getFont());
+            }
+            Font base = (Font) jc.getClientProperty("baseFont");
+            if (base != null && !(jc instanceof JScrollBar)) {
+                jc.setFont(base.deriveFont((float) (base.getSize2D() * escala)));
+            }
+
+            if (jc instanceof JButton) {
+                if (jc.getClientProperty("basePref") == null && jc.isPreferredSizeSet()) {
+                    jc.putClientProperty("basePref", jc.getPreferredSize());
+                }
+                Dimension bp = (Dimension) jc.getClientProperty("basePref");
+                if (bp != null) {
+                    jc.setPreferredSize(new Dimension((int) (bp.width * escala), (int) (bp.height * escala)));
+                }
+                JButton b = (JButton) jc;
+                if (b.getIcon() instanceof IconoVector iv) {
+                    if (jc.getClientProperty("baseIconSize") == null) {
+                        jc.putClientProperty("baseIconSize", iv.getIconWidth());
+                    }
+                    int tam = (int) Math.round((Integer) jc.getClientProperty("baseIconSize") * escala);
+                    b.setIcon(new IconoVector(iv.getTipo(), tam, iv.getColor()));
+                    b.setIconTextGap((int) Math.round(10 * escala));
+                }
+            }
+
+            if (jc instanceof JTable t) {
+                t.setRowHeight((int) Math.round(28 * escala));
+                JTableHeader h = t.getTableHeader();
+                h.setPreferredSize(new Dimension(h.getWidth(), (int) Math.round(34 * escala)));
+            }
+        }
+        if (c instanceof Container cont) {
+            for (Component hijo : cont.getComponents()) {
+                escalar(hijo, escala);
+            }
+        }
+    }
+
+
     public static void styleTable(JTable tabla) {
         tabla.setFont(FONT_TABLA);
         tabla.setRowHeight(28);
@@ -83,7 +154,6 @@ public final class UIStyle {
         });
     }
 
-    /** Barra de cabecera en verde oscuro con título y subtítulo, usada en todas las ventanas. */
     public static JPanel headerBar(String titulo, String subtitulo) {
         JPanel header = new JPanel();
         header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
@@ -107,7 +177,7 @@ public final class UIStyle {
         return header;
     }
 
-    /** Panel con esquinas redondeadas, usado como "tarjeta" contenedora en cada ventana. */
+
     public static class RoundedPanel extends JPanel {
         private final int radius;
         private final Color bg;
@@ -129,7 +199,7 @@ public final class UIStyle {
         }
     }
 
-    /** Botón sólido, con esquinas redondeadas y color al pasar el mouse, sin bordes 3D anticuados. */
+
     public static class RoundedButton extends JButton {
         private final Color base;
         private final Color hover;

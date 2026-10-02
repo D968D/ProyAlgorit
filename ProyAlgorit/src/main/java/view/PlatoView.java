@@ -37,7 +37,7 @@ public class PlatoView extends JFrame {
                 new String[]{"ID", "Nombre", "Precio", "Categoría"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // solo se edita con los botones
+                return false;
             }
         };
 
@@ -68,6 +68,7 @@ public class PlatoView extends JFrame {
         card.add(panelBotones, BorderLayout.SOUTH);
         root.add(card, BorderLayout.CENTER);
         setContentPane(root);
+        activarEscalado(this);
     }
 
     public int getFilaSeleccionada() {

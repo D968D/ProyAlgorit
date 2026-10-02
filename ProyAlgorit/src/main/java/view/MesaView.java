@@ -50,6 +50,7 @@ public class MesaView extends JFrame {
 
         root.add(card, BorderLayout.CENTER);
         setContentPane(root);
+        activarEscalado(this);
     }
 
     public int getFilaSeleccionada() {

@@ -5,7 +5,7 @@ import model.Operacion;
 public class PilaOperaciones {
 
     private final Operacion[] elementos;
-    private int cima;                 // índice de la cima (-1 = vacía)
+    private int cima;
     private final int capacidadMaxima;
 
     public PilaOperaciones(int capacidadMaxima) {
@@ -17,28 +17,28 @@ public class PilaOperaciones {
         this.cima = -1;
     }
 
-    /** Inserta una operación en la cima (push). */
+
     public boolean push(Operacion operacion) {
         if (estaLlena()) {
-            return false; // pila llena
+            return false;
         }
         cima++;
         elementos[cima] = operacion;
         return true;
     }
 
-    /** Extrae y devuelve la operación de la cima (pop). */
+
     public Operacion pop() {
         if (estaVacia()) {
             return null;
         }
         Operacion op = elementos[cima];
-        elementos[cima] = null; // ayuda al GC
+        elementos[cima] = null;
         cima--;
         return op;
     }
 
-    /** Devuelve la operación de la cima sin extraerla (peek). */
+
     public Operacion peek() {
         if (estaVacia()) {
             return null;
@@ -46,7 +46,7 @@ public class PilaOperaciones {
         return elementos[cima];
     }
 
-    /** Validación de pila vacía. */
+
     public boolean estaVacia() {
         return cima == -1;
     }
