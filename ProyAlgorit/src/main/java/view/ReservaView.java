@@ -45,6 +45,7 @@ public class ReservaView extends JFrame {
 
         RoundedPanel card = new RoundedPanel(22, CREMA);
         card.setLayout(new BorderLayout(0, 12));
+
         JPanel headerOriginal = headerBar("Gestión de Reservas", "Reservas del salón, búsqueda y orden por ID");
 
         JPanel headerWrapper = new JPanel(new BorderLayout());
@@ -80,7 +81,6 @@ public class ReservaView extends JFrame {
         scroll.setBackground(CREMA);
         scroll.getViewport().setBackground(Color.WHITE);
         card.add(scroll, BorderLayout.CENTER);
-
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 16));
         panelBotones.setBackground(CREMA);
@@ -135,7 +135,6 @@ public class ReservaView extends JFrame {
         }
 
         try {
-
             Reserva reserva = reservaDAO.insertar(
                     dialog.getCliente(), dialog.getFecha(), dialog.getHora(),
                     dialog.getPersonas(), dialog.getMesa(), "Pendiente");
