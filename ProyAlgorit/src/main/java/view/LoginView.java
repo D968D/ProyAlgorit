@@ -5,6 +5,9 @@ import dao.LoginDAO;
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.EmptyBorder;
+
+import static view.UIStyle.*;
+
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -15,17 +18,6 @@ import java.awt.geom.RoundRectangle2D;
 
 public class LoginView extends JFrame {
 
-    // ---------- Paleta de marca -------------------------------------------------
-    private static final Color VERDE_OLIVA   = new Color(0x6E, 0x7C, 0x3B);
-    private static final Color VERDE_OSCURO  = new Color(0x3E, 0x47, 0x22);
-    private static final Color NARANJA       = new Color(0xD9, 0x62, 0x2B);
-    private static final Color NARANJA_HOVER = new Color(0xC2, 0x54, 0x22);
-    private static final Color CREMA         = new Color(0xF8, 0xF3, 0xE6);
-    private static final Color FONDO_EXTERNO = new Color(0xEA, 0xE6, 0xD8);
-    private static final Color TEXTO_OSCURO  = new Color(0x30, 0x2C, 0x20);
-    private static final Color GRIS_TEXTO    = new Color(0x8D, 0x89, 0x7A);
-    private static final Color LINEA_CAMPO   = new Color(0xCB, 0xC5, 0xB2);
-
     private final JTextField txtUsuario = new JTextField();
     private final JPasswordField txtContrasena = new JPasswordField();
     private final RoundedButton btnIngresar = new RoundedButton("INGRESAR", NARANJA, NARANJA_HOVER);
@@ -33,10 +25,10 @@ public class LoginView extends JFrame {
 
     public LoginView() {
         setTitle("Iniciar sesión - C&R OrderManager");
-        setSize(780, 480);
+        setSize(780,480);
+        setLocationRelativeTo(null);
         setMinimumSize(new Dimension(680, 440));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
         JPanel outer = new JPanel(new BorderLayout());
@@ -53,6 +45,7 @@ public class LoginView extends JFrame {
 
         btnIngresar.addActionListener(e -> intentarLogin());
         getRootPane().setDefaultButton(btnIngresar);
+        activarEscalado(this);
     }
 
     // ---------- Panel izquierdo: formulario -------------------------------------

@@ -33,6 +33,7 @@ public class PlatoController {
         view.btnEliminar.addActionListener(e -> eliminar());
         view.btnDeshacer.addActionListener(e -> deshacer());
         view.btnHistorial.addActionListener(e -> mostrarHistorial());
+        view.btnVolver.addActionListener(e -> volver());
 
         view.setVisible(true);
     }
@@ -250,5 +251,9 @@ public class PlatoController {
         JOptionPane.showMessageDialog(view, scroll,
                 "Historial de operaciones (Pila LIFO)",
                 JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void volver(){
+        view.dispose();
     }
 }

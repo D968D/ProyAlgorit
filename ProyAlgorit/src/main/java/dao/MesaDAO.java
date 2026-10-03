@@ -71,4 +71,17 @@ public class MesaDAO {
             return false;
         }
     }
+    public boolean eliminar(int numeroMesa) {
+        String sql = "DELETE FROM mesas WHERE numero_mesa = ?";
+
+        try (Connection conn = ConexionDB.getConexion();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setInt(1, numeroMesa);
+            return pst.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar mesa: " + e.getMessage());
+            return false;
+        }
+    }
 }

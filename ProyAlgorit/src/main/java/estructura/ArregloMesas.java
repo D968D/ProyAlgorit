@@ -100,6 +100,14 @@ public class ArregloMesas {
         }
         return true;
     }
+    public boolean existe(int numeroMesa){
+        for(Mesa m:mesas){
+            if(m!=null && numeroMesa==m.getNumeroMesa()){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public int getCantidad() {
         return cantidad;

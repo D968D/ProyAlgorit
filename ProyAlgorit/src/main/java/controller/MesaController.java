@@ -4,10 +4,12 @@ import dao.MesaDAO;
 import estructura.ArregloMesas;
 import estructura.MatrizOcupacion;
 import model.Mesa;
+import view.AgregarMesaDialog;
 import view.EstadoDialog;
 import view.MesaView;
 
 import javax.swing.*;
+
 import java.util.List;
 
 public class MesaController {
@@ -29,7 +31,10 @@ public class MesaController {
 
         cargarMesas();
 
+        view.btnAgregar.addActionListener(e -> agregarMesa());
         view.btnActualizar.addActionListener(e -> actualizarEstado());
+        view.btnEliminar.addActionListener(e -> eliminarMesa());
+        view.btnVolver.addActionListener(e -> volver());
         view.setVisible(true);
     }
 
@@ -45,7 +50,24 @@ public class MesaController {
 
         matrizOcupacion.cargarDesdeMesas(arregloMesas.recorrer());
     }
+    private void agregarMesa() {
+        AgregarMesaDialog dialog = new AgregarMesaDialog(view,arregloMesas);
+        dialog.setVisible(true);
 
+        if (!dialog.isConfirmado()) {
+            return;
+        }
+
+        Mesa nuevo = new Mesa(dialog.getNumMesa(),dialog.getCapacidad());
+        if (mesaDAO.insertar(nuevo)) {
+            arregloMesas.insertar(nuevo);
+            JOptionPane.showMessageDialog(view, "Mesa agregada correctamente.");
+            cargarMesas();
+        } else {
+            JOptionPane.showMessageDialog(view, "No se pudo agregar la mesa.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     /** Se ejecuta al presionar "Actualizar": abre LIBRE/OCUPADO y guarda el cambio */
     private void actualizarEstado() {
         int fila = view.getFilaSeleccionada();
@@ -74,5 +96,28 @@ public class MesaController {
         } else {
             JOptionPane.showMessageDialog(view, "No se pudo actualizar la mesa.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    /* Elimina una mesa de la base de datos */
+    private void eliminarMesa() {
+        int fila = view.getFilaSeleccionada();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(view, "Selecciona una mesa de la tabla primero.");
+            return;
+        }
+
+        int numeroMesa = (int) view.modeloTabla.getValueAt(fila, 0);
+
+        boolean okBD = mesaDAO.eliminar(numeroMesa);
+        boolean okArreglo = arregloMesas.eliminarLogico(numeroMesa);
+
+        if (okBD && okArreglo) {
+            cargarMesas(); // recarga la tabla y el arreglo
+            JOptionPane.showMessageDialog(view, "Mesa " + numeroMesa + " eliminada.");
+        } else {
+            JOptionPane.showMessageDialog(view, "No se pudo eliminar la mesa.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void volver(){
+        view.dispose();
     }
 }

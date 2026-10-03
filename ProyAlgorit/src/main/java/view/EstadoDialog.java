@@ -1,12 +1,18 @@
 package view;
 
 import javax.swing.*;
+
+import static view.UIStyle.CREMA;
+import static view.UIStyle.ROYAL_BLUE;
+import static view.UIStyle.ROYAL_BLUE_HOVER;
+import static view.UIStyle.button;
+
 import java.awt.*;
 
 public class EstadoDialog extends JDialog {
 
-    public final JButton btnLibre = new JButton("LIBRE");
-    public final JButton btnOcupado = new JButton("OCUPADO");
+    public final JButton btnLibre     = button("LIBRE", ROYAL_BLUE_HOVER, ROYAL_BLUE);
+    public final JButton btnOcupado   = button("OCUPADO", ROYAL_BLUE_HOVER, ROYAL_BLUE);
     private String estadoSeleccionado = null;
 
     public EstadoDialog(JFrame padre) {
@@ -14,7 +20,7 @@ public class EstadoDialog extends JDialog {
         setSize(300, 150);
         setLocationRelativeTo(padre);
         setLayout(new FlowLayout(FlowLayout.CENTER, 20, 40));
-
+        getContentPane().setBackground(CREMA);
         add(btnLibre);
         add(btnOcupado);
 

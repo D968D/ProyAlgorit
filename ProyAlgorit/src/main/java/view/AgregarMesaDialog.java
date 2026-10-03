@@ -2,6 +2,8 @@ package view;
 
 import javax.swing.*;
 
+import estructura.ArregloMesas;
+
 import static view.UIStyle.CREMA;
 import static view.UIStyle.VERDE_HOVER;
 import static view.UIStyle.VERDE_OLIVA;
@@ -9,17 +11,18 @@ import static view.UIStyle.button;
 
 import java.awt.*;
 
-public class AgregarPlatoDialog extends JDialog {
-
-    private final JTextField txtNombre    = new JTextField();
-    private final JTextField txtPrecio    = new JTextField();
-    private final JTextField txtCategoria = new JTextField();
+public class AgregarMesaDialog extends JDialog{
+    
+    private final JTextField txtNumMesa    = new JTextField();
+    private final JTextField txtCapacidad    = new JTextField();
     private final JButton btnAgregar      = button("AGREGAR", VERDE_OLIVA, VERDE_HOVER);
+    private final ArregloMesas mesas;
 
     private boolean confirmado = false;
 
-    public AgregarPlatoDialog(JFrame parent) {
-        super(parent, "Agregar plato", true);
+    public AgregarMesaDialog(JFrame parent, ArregloMesas mesas) {
+        super(parent, "Agregar mesa", true);
+        this.mesas=mesas;
         setSize(360, 240);
         setLocationRelativeTo(parent);
         setResizable(false);
@@ -27,9 +30,8 @@ public class AgregarPlatoDialog extends JDialog {
         getContentPane().setBackground(CREMA);
         // Tamaño fijo de los campos para que se vean y se pueda escribir
         Dimension tamanoCampo = new Dimension(200, 28);
-        txtNombre.setPreferredSize(tamanoCampo);
-        txtPrecio.setPreferredSize(tamanoCampo);
-        txtCategoria.setPreferredSize(tamanoCampo);
+        txtNumMesa.setPreferredSize(tamanoCampo);
+        txtCapacidad.setPreferredSize(tamanoCampo);
 
         JPanel form = new JPanel(new GridBagLayout());
         form.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
@@ -39,41 +41,29 @@ public class AgregarPlatoDialog extends JDialog {
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Fila nombre
+        // Fila numero de mesa
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 0;
-        form.add(new JLabel("Nombre:"), gbc);
+        form.add(new JLabel("Número De Mesa:"), gbc);
 
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
-        form.add(txtNombre, gbc);
+        form.add(txtNumMesa, gbc);
 
-        // Fila precio
+        // Fila capacidad
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 0;
-        form.add(new JLabel("Precio:"), gbc);
+        form.add(new JLabel("Capacidad:"), gbc);
 
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
-        form.add(txtPrecio, gbc);
-
-        // Fila categoría
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        form.add(new JLabel("Categoría:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        form.add(txtCategoria, gbc);
+        form.add(txtCapacidad, gbc);
 
         JPanel panelBoton = new JPanel();
         panelBoton.setBorder(BorderFactory.createEmptyBorder(5, 0, 15, 0));
@@ -90,30 +80,37 @@ public class AgregarPlatoDialog extends JDialog {
             }
         });
         // Enfocar el primer campo al abrir
-        SwingUtilities.invokeLater(() -> txtNombre.requestFocusInWindow());
+        SwingUtilities.invokeLater(() -> txtNumMesa.requestFocusInWindow());
     }
 
     private boolean validar() {
-        if (txtNombre.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingrese el nombre del plato.");
-            txtNombre.requestFocusInWindow();
-            return false;
-        }
         try {
-            double p = Double.parseDouble(txtPrecio.getText().trim().replace(',', '.'));
+            int p = Integer.parseInt(txtNumMesa.getText().trim());
             if (p <= 0) {
-                JOptionPane.showMessageDialog(this, "El precio debe ser mayor a 0.");
-                txtPrecio.requestFocusInWindow();
+                JOptionPane.showMessageDialog(this, "El número de la mesa debe ser mayor a 0.");
+                txtNumMesa.requestFocusInWindow();
+                return false;
+            }
+            if (mesas.existe(p)) {
+                JOptionPane.showMessageDialog(this, "La mesa Nº " + p + " ya existe. Elija otro número.");
+                txtNumMesa.requestFocusInWindow();
                 return false;
             }
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Ingrese un precio numérico válido (ej: 25.50).");
-            txtPrecio.requestFocusInWindow();
+            JOptionPane.showMessageDialog(this, "Ingrese un número entero válido.");
+            txtNumMesa.requestFocusInWindow();
             return false;
         }
-        if (txtCategoria.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingrese la categoría.");
-            txtCategoria.requestFocusInWindow();
+        try {
+            int p = Integer.parseInt(txtCapacidad.getText().trim());
+            if (p <= 0) {
+                JOptionPane.showMessageDialog(this, "La capacidad de la mesa debe ser mayor a 0.");
+                txtCapacidad.requestFocusInWindow();
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Ingrese un número entero válido.");
+            txtCapacidad.requestFocusInWindow();
             return false;
         }
         return true;
@@ -123,15 +120,11 @@ public class AgregarPlatoDialog extends JDialog {
         return confirmado;
     }
 
-    public String getNombre() {
-        return txtNombre.getText().trim();
+    public int getNumMesa() {
+        return Integer.parseInt(txtNumMesa.getText().trim());
     }
 
-    public double getPrecio() {
-        return Double.parseDouble(txtPrecio.getText().trim().replace(',', '.'));
-    }
-
-    public String getCategoria() {
-        return txtCategoria.getText().trim();
+    public int getCapacidad() {
+        return Integer.parseInt(txtCapacidad.getText().trim());
     }
 }

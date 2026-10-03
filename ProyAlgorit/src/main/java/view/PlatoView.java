@@ -2,6 +2,9 @@ package view;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import view.UIStyle.RoundedPanel;
+
 import java.awt.*;
 
 import static view.UIStyle.*;
@@ -13,16 +16,17 @@ public class PlatoView extends JFrame {
     public final JButton btnEliminar   = button("ELIMINAR", TERRACOTA, TERRACOTA_HOVER);
     public final JButton btnDeshacer   = button("DESHACER", MOSTAZA, MOSTAZA_HOVER);
     public final JButton btnHistorial  = button("HISTORIAL", TAUPE, TAUPE_HOVER);
+    public final JButton btnVolver     = button("X", TERRACOTA, TERRACOTA_HOVER);
 
     public final DefaultTableModel modeloTabla;
     public final JTable tabla;
 
     public PlatoView() {
         setTitle("Gestión de Platos - C&R OrderManager");
-        setSize(760, 440);
+        setSize(760,440);
+        setLocationRelativeTo(null);
         setMinimumSize(new Dimension(640, 380));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
         JPanel root = new JPanel(new BorderLayout());
@@ -31,13 +35,28 @@ public class PlatoView extends JFrame {
 
         RoundedPanel card = new RoundedPanel(22, CREMA);
         card.setLayout(new BorderLayout(0, 12));
-        card.add(headerBar("Gestión de Platos", "Carta, precios y categorías del restaurante"), BorderLayout.NORTH);
+        JPanel headerOriginal = headerBar("Gestión de Platos", "Carta, precios y categorías del restaurante");
+
+        JPanel headerWrapper = new JPanel(new BorderLayout());
+        headerWrapper.setBackground(headerOriginal.getBackground()); // Hereda el verde oscuro automáticamente
+        
+        headerWrapper.add(headerOriginal, BorderLayout.WEST);
+        
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10,10 ));
+        rightPanel.setOpaque(false);
+        
+        btnVolver.setPreferredSize(new Dimension(60, 60));
+        rightPanel.add(btnVolver);
+        
+        headerWrapper.add(rightPanel, BorderLayout.EAST);
+        
+        card.add(headerWrapper, BorderLayout.NORTH);
 
         modeloTabla = new DefaultTableModel(
                 new String[]{"ID", "Nombre", "Precio", "Categoría"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // solo se edita con los botones
+                return false;
             }
         };
 
@@ -68,6 +87,7 @@ public class PlatoView extends JFrame {
         card.add(panelBotones, BorderLayout.SOUTH);
         root.add(card, BorderLayout.CENTER);
         setContentPane(root);
+        activarEscalado(this);
     }
 
     public int getFilaSeleccionada() {

@@ -1,13 +1,19 @@
 package view;
 
 import javax.swing.*;
+
+import static view.UIStyle.CREMA;
+import static view.UIStyle.NARANJA;
+import static view.UIStyle.NARANJA_HOVER;
+import static view.UIStyle.button;
+
 import java.awt.*;
 
 
 public class ActualizarPlatoDialog extends JDialog {
 
     private final JTextField txtPrecio = new JTextField();
-    private final JButton btnActualizar = new JButton("Actualizar");
+    private final JButton btnActualizar = button("ACTUALIZAR", NARANJA, NARANJA_HOVER);
 
     private boolean confirmado = false;
 
@@ -17,12 +23,14 @@ public class ActualizarPlatoDialog extends JDialog {
         setLocationRelativeTo(parent);
         setResizable(false);
         setLayout(new BorderLayout(10, 10));
+        getContentPane().setBackground(CREMA);
 
         txtPrecio.setPreferredSize(new Dimension(160, 28));
         txtPrecio.setText(String.valueOf(precioActual));
 
         JPanel form = new JPanel(new GridBagLayout());
         form.setBorder(BorderFactory.createEmptyBorder(25, 20, 10, 20));
+        form.setBackground(CREMA);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
@@ -32,7 +40,7 @@ public class ActualizarPlatoDialog extends JDialog {
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 0;
-        form.add(new JLabel("precio"), gbc);
+        form.add(new JLabel("Precio:"), gbc);
 
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -42,6 +50,7 @@ public class ActualizarPlatoDialog extends JDialog {
         JPanel panelBoton = new JPanel();
         panelBoton.setBorder(BorderFactory.createEmptyBorder(5, 0, 15, 0));
         panelBoton.add(btnActualizar);
+        panelBoton.setBackground(CREMA);
 
         add(form, BorderLayout.CENTER);
         add(panelBoton, BorderLayout.SOUTH);

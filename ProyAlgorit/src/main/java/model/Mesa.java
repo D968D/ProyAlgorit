@@ -11,7 +11,11 @@ public class Mesa {
         this.capacidad = capacidad;
         this.estado = estado;
     }
-
+    public Mesa(int numeroMesa, int capacidad){
+        this.numeroMesa=numeroMesa;
+        this.capacidad=capacidad;
+        this.estado="LIBRE";
+    }
     public int getNumeroMesa() {
         return numeroMesa;
     }
