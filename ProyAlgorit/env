@@ -1,3 +1,0 @@
-DB_URL=jdbc:postgresql://restaurante-db.canoy6a4yl8c.us-east-1.rds.amazonaws.com:5432/cordonrosadb
-DB_USER=postgres
-DB_PASSWORD=algortimos123
