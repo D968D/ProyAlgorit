@@ -57,6 +57,7 @@ public class ReservaController {
                 lista.insertar(r);
                 listaDoble.insertar(r);
             }
+            System.out.println("Completao");
         } catch (SQLException ex) {
             errorBD("No se pudieron cargar las reservas", ex);
         }
@@ -71,6 +72,7 @@ public class ReservaController {
                     r.getCantidadPersonas(), r.getIdMesa(), r.getEstado()
             });
         }
+        System.out.println("completed");
     }
 
     private void errorBD(String mensaje, SQLException ex) {

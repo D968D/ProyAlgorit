@@ -2,6 +2,7 @@ package view;
 
 import controller.MesaController;
 import controller.PlatoController;
+import controller.ReservaController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,7 +50,7 @@ public class MenuPrincipal extends JFrame {
             new PlatoController(platoView);
         });
 
-        btnReservas.addActionListener(e -> new ReservaView().setVisible(true));
+        btnReservas.addActionListener(e -> new ReservaController(new ReservaView()));
 
         btnSalir.addActionListener(e -> System.exit(0));
 
