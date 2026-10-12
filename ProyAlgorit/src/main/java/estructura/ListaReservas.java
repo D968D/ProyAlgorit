@@ -1,8 +1,7 @@
 package estructura;
 
-import javax.swing.table.DefaultTableModel;
-
 import model.Reserva;
+import util.FechaHora;
 
 public class ListaReservas {
 
@@ -89,8 +88,16 @@ public class ListaReservas {
         return null;
     }
 
-    // ORDENAR POR ID DE RESERVA
+    /** Criterios de ordenamiento disponibles. */
+    public enum Criterio { ID, CLIENTE, FECHA_HORA }
+
+    /** ORDENAR por ID (criterio por defecto). */
     public void ordenar() {
+        ordenar(Criterio.ID);
+    }
+
+    /** ORDENAR por el criterio indicado (intercambia los datos de los nodos, O(n²)). */
+    public void ordenar(Criterio criterio) {
 
         if (cabeza == null || cabeza.getSiguiente() == null) {
             return;
@@ -104,15 +111,10 @@ public class ListaReservas {
 
             while (siguiente != null) {
 
-                if (actual.getReserva().getIdReserva()
-                        > siguiente.getReserva().getIdReserva()) {
+                if (esMayor(actual.getReserva(), siguiente.getReserva(), criterio)) {
 
                     Reserva temporal = actual.getReserva();
-
-                    actual.setReserva(
-                            siguiente.getReserva()
-                    );
-
+                    actual.setReserva(siguiente.getReserva());
                     siguiente.setReserva(temporal);
                 }
 
@@ -123,28 +125,28 @@ public class ListaReservas {
         }
     }
 
-    // CARGAR LAS RESERVAS EN LA TABLA
-    public void cargarEnTabla(DefaultTableModel modelo) {
-
-        modelo.setRowCount(0);
-
-        NodoReserva actual = cabeza;
-
-        while (actual != null) {
-
-            Reserva reserva = actual.getReserva();
-
-            modelo.addRow(new Object[]{
-                    reserva.getIdReserva(),
-                    reserva.getCliente(),
-                    reserva.getFecha(),
-                    reserva.getHora(),
-                    reserva.getCantidadPersonas(),
-                    reserva.getIdMesa(),
-                    reserva.getEstado()
-            });
-
-            actual = actual.getSiguiente();
+    private boolean esMayor(Reserva a, Reserva b, Criterio criterio) {
+        switch (criterio) {
+            case CLIENTE:
+                return a.getCliente().compareToIgnoreCase(b.getCliente()) > 0;
+            case FECHA_HORA:
+                return FechaHora.de(a).isAfter(FechaHora.de(b));
+            default:
+                return a.getIdReserva() > b.getIdReserva();
         }
+    }
+
+    // CONVERTIR A ARREGLO (para que la vista arme su tabla sin que la lista dependa de Swing)
+    public Reserva[] aArreglo() {
+        int n = 0;
+        for (NodoReserva a = cabeza; a != null; a = a.getSiguiente()) {
+            n++;
+        }
+        Reserva[] resultado = new Reserva[n];
+        int i = 0;
+        for (NodoReserva a = cabeza; a != null; a = a.getSiguiente()) {
+            resultado[i++] = a.getReserva();
+        }
+        return resultado;
     }
 }

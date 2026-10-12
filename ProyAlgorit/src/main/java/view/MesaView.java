@@ -2,9 +2,6 @@ package view;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
-import view.UIStyle.RoundedPanel;
-
 import java.awt.*;
 
 import static view.UIStyle.*;

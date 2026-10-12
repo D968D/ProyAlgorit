@@ -19,7 +19,7 @@ public class PlatoView extends JFrame {
     public final JButton btnVolver     = button("X", TERRACOTA, TERRACOTA_HOVER);
 
     public final DefaultTableModel modeloTabla;
-    public final JTable tabla;
+    private final JTable tabla;
 
     public PlatoView() {
         setTitle("Gestión de Platos - C&R OrderManager");

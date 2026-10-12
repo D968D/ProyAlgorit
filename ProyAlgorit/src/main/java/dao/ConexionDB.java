@@ -1,34 +1,48 @@
 package dao;
 
-
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.io.FileInputStream;
 
 public class ConexionDB {
 
     public static Connection getConexion() throws SQLException {
         Connection conn = null;
         Properties config = new Properties();
-        try (FileInputStream fis = new FileInputStream("ProyAlgorit/.env")) {
-            
-            config.load(fis);
-            
+
+        Path[] candidatos = {
+                Path.of(".env"),
+                Path.of("ProyAlgorit/.env"),
+                Path.of("src/.env")
+        };
+
+        Path rutaEnv = null;
+        for (Path candidato : candidatos) {
+            if (Files.exists(candidato)) {
+                rutaEnv = candidato;
+                break;
+            }
+        }
+
+        if (rutaEnv == null) {
+            throw new SQLException("No se encontró el archivo .env en la raíz del proyecto.");
+        }
+
+        try (InputStream input = Files.newInputStream(rutaEnv)) {
+            config.load(input);
+
             String url = config.getProperty("DB_URL");
             String user = config.getProperty("DB_USER");
             String pass = config.getProperty("DB_PASSWORD");
 
             conn = DriverManager.getConnection(url, user, pass);
-            
         } catch (IOException e) {
-            System.err.println("Error: No se encontró el archivo .env en la raíz del proyecto.");
-            e.printStackTrace();
-        } catch (SQLException e) {
-            System.err.println("Error de SQL: Credenciales incorrectas o la base de datos está apagada.");
-            e.printStackTrace();
+            throw new SQLException("No se pudo leer el archivo .env: " + rutaEnv, e);
         }
         return conn;
     }

@@ -31,6 +31,16 @@ CREATE TABLE mesas (
     estado      VARCHAR(20) DEFAULT 'LIBRE'
 );
 
+CREATE TABLE IF NOT EXISTS reservas (
+    idreserva SERIAL PRIMARY KEY,
+    cliente VARCHAR(100) NOT NULL,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    cantidad_personas INT NOT NULL,
+    numero_mesa INT REFERENCES mesas(numero_mesa),
+    estado VARCHAR(20) DEFAULT 'PENDIENTE'
+);
+
 CREATE TABLE pedidos (
     idpedido    SERIAL PRIMARY KEY,
     numero_mesa INT REFERENCES mesas(numero_mesa),
@@ -70,3 +80,8 @@ INSERT INTO platos (nombre, precio, categoria) VALUES
 ('Lomo Saltado', 28.00, 'Fondos'),
 ('Ceviche Mixto', 32.00, 'Entradas'),
 ('Chicha Morada', 8.00, 'Bebidas');
+
+INSERT INTO reservas (cliente, fecha, hora, cantidad_personas, numero_mesa, estado) VALUES
+('María López', '2026-10-11', '19:30:00', 4, 1, 'PENDIENTE'),
+('Carlos Ruiz', '2026-10-11', '20:00:00', 2, 2, 'CONFIRMADA'),
+('Ana Torres', '2026-10-12', '18:45:00', 5, 3, 'PENDIENTE');
