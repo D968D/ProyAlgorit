@@ -4,6 +4,7 @@ import estructura.ArbolBinarioPlatos;
 import estructura.NodoPlato;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 import static view.UIStyle.*;
@@ -11,70 +12,61 @@ import static view.UIStyle.*;
 /** Ventana del árbol binario de la carta (Capítulo 8): dibujo del árbol y resultados de recorridos. */
 public class ArbolPlatosView extends JFrame {
 
-    public final JButton btnInsertar  = button("INSERTAR", VERDE_OLIVA, VERDE_HOVER);
-    public final JButton btnBuscar    = button("BUSCAR", NARANJA, NARANJA_HOVER);
-    public final JButton btnEliminar  = button("ELIMINAR", TERRACOTA, TERRACOTA_HOVER);
-    public final JButton btnPreorden  = button("PREORDEN", MOSTAZA, MOSTAZA_HOVER);
-    public final JButton btnInorden   = button("INORDEN", MOSTAZA, MOSTAZA_HOVER);
-    public final JButton btnPostorden = button("POSTORDEN", MOSTAZA, MOSTAZA_HOVER);
-    public final JButton btnVolver    = button("X", TERRACOTA, TERRACOTA_HOVER);
+    public final JButton btnInsertar  = primario("Insertar", IconoVector.Tipo.AGREGAR);
+    public final JButton btnBuscar    = secundario("Buscar", IconoVector.Tipo.BUSCAR);
+    public final JButton btnEliminar  = peligro("Eliminar", IconoVector.Tipo.ELIMINAR);
+    public final JButton btnPreorden  = discreto("Preorden", IconoVector.Tipo.ARBOL);
+    public final JButton btnInorden   = discreto("Inorden", IconoVector.Tipo.ARBOL);
+    public final JButton btnPostorden = discreto("Postorden", IconoVector.Tipo.ARBOL);
+    public final JButton btnVolver    = botonVolver();
 
     public final JTextArea areaResultados = new JTextArea(5, 40);
     private final PanelArbol panelArbol = new PanelArbol();
 
     public ArbolPlatosView() {
         setTitle("Árbol Binario de la Carta - C&R OrderManager");
-        setSize(900, 640);
-        setMinimumSize(new Dimension(780, 560));
+        setSize(940, 700);
+        setMinimumSize(new Dimension(900, 600));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
 
-        JPanel root = new JPanel(new BorderLayout());
-        root.setBackground(FONDO_EXTERNO);
-        root.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel root = raiz();
 
-        RoundedPanel card = new RoundedPanel(22, CREMA);
-        card.setLayout(new BorderLayout(0, 12));
-
-        JPanel headerOriginal = headerBar("Árbol Binario de la Carta",
-                "Platos por niveles y recorridos preorden, inorden y postorden");
-        JPanel headerWrapper = new JPanel(new BorderLayout());
-        headerWrapper.setBackground(headerOriginal.getBackground());
-        headerWrapper.add(headerOriginal, BorderLayout.WEST);
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-        rightPanel.setOpaque(false);
-        btnVolver.setPreferredSize(new Dimension(60, 60));
-        rightPanel.add(btnVolver);
-        headerWrapper.add(rightPanel, BorderLayout.EAST);
-        card.add(headerWrapper, BorderLayout.NORTH);
+        JPanel superior = new JPanel();
+        superior.setOpaque(false);
+        superior.setLayout(new BoxLayout(superior, BoxLayout.Y_AXIS));
+        superior.add(encabezado("Árbol de la carta",
+                "Platos por niveles y recorridos preorden, inorden y postorden", btnVolver));
+        superior.add(barraAcciones(
+                new JComponent[]{btnInsertar, btnBuscar, btnEliminar},
+                new JComponent[]{btnPreorden, btnInorden, btnPostorden}));
+        root.add(superior, BorderLayout.NORTH);
 
         JScrollPane scrollArbol = new JScrollPane(panelArbol);
-        scrollArbol.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 24));
-        scrollArbol.getViewport().setBackground(Color.WHITE);
-        card.add(scrollArbol, BorderLayout.CENTER);
+        scrollArbol.setBorder(BorderFactory.createEmptyBorder());
+        scrollArbol.getViewport().setBackground(SUPERFICIE);
+        RoundedPanel cardArbol = tarjeta();
+        cardArbol.add(scrollArbol, BorderLayout.CENTER);
+        root.add(cardArbol, BorderLayout.CENTER);
 
         areaResultados.setEditable(false);
         areaResultados.setLineWrap(true);
         areaResultados.setWrapStyleWord(true);
-        areaResultados.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        areaResultados.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        areaResultados.setForeground(TINTA);
+        areaResultados.setBackground(SUPERFICIE);
+        areaResultados.setBorder(new EmptyBorder(12, 16, 12, 16));
         JScrollPane scrollRes = new JScrollPane(areaResultados);
-        scrollRes.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 24));
+        scrollRes.setBorder(BorderFactory.createEmptyBorder());
+        scrollRes.getViewport().setBackground(SUPERFICIE);
+        RoundedPanel cardRes = tarjeta();
+        cardRes.add(scrollRes, BorderLayout.CENTER);
+        JPanel sur = new JPanel(new BorderLayout());
+        sur.setOpaque(false);
+        sur.setBorder(new EmptyBorder(16, 0, 0, 0));
+        sur.add(cardRes, BorderLayout.CENTER);
+        root.add(sur, BorderLayout.SOUTH);
 
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 6));
-        panelBotones.setBackground(CREMA);
-        for (JButton b : new JButton[]{btnInsertar, btnBuscar, btnEliminar, btnPreorden, btnInorden, btnPostorden}) {
-            b.setPreferredSize(new Dimension(125, 40));
-            panelBotones.add(b);
-        }
-
-        JPanel sur = new JPanel(new BorderLayout(0, 8));
-        sur.setBackground(CREMA);
-        sur.add(scrollRes, BorderLayout.CENTER);
-        sur.add(panelBotones, BorderLayout.SOUTH);
-        card.add(sur, BorderLayout.SOUTH);
-
-        root.add(card, BorderLayout.CENTER);
         setContentPane(root);
         activarEscalado(this);
     }
@@ -114,9 +106,10 @@ public class ArbolPlatosView extends JFrame {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
             if (arbol == null || arbol.estaVacio()) {
-                g2.setColor(GRIS_TEXTO);
+                g2.setColor(TINTA_SUAVE);
                 g2.setFont(FONT_SUB);
                 g2.drawString("El árbol está vacío.", 30, 40);
                 g2.dispose();
@@ -140,7 +133,7 @@ public class ArbolPlatosView extends JFrame {
                 xDer = dibujar(g2, nodo.getDerecho(), nivel + 1);
             }
 
-            g2.setColor(LINEA_CAMPO);
+            g2.setColor(BORDE_FUERTE);
             g2.setStroke(new BasicStroke(1.6f));
             if (xIzq >= 0) {
                 g2.drawLine(x, y, xIzq, y + SEP_Y);
@@ -150,16 +143,16 @@ public class ArbolPlatosView extends JFrame {
             }
 
             boolean resaltado = nodo.getPlato().getIdPlato() == idResaltado;
-            g2.setColor(resaltado ? NARANJA : VERDE_OLIVA);
+            g2.setColor(resaltado ? ACENTO : OLIVA);
             g2.fillOval(x - RADIO, y - RADIO, RADIO * 2, RADIO * 2);
             g2.setColor(Color.WHITE);
-            g2.setFont(FONT_BOTON);
+            g2.setFont(FONT_BOTON_B);
             String id = String.valueOf(nodo.getPlato().getIdPlato());
             FontMetrics fm = g2.getFontMetrics();
             g2.drawString(id, x - fm.stringWidth(id) / 2, y + fm.getAscent() / 2 - 1);
 
-            g2.setColor(TEXTO_OSCURO);
-            g2.setFont(new Font("SansSerif", Font.PLAIN, 11));
+            g2.setColor(TINTA);
+            g2.setFont(new Font(FAMILIA, Font.PLAIN, 11));
             String nombre = nodo.getPlato().getNombre();
             if (nombre.length() > 11) {
                 nombre = nombre.substring(0, 10) + "…";

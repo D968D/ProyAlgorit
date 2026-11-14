@@ -1,85 +1,77 @@
 package view;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 import static view.UIStyle.*;
 
-/** Ventana común para el ABB y el AVL: árbol dibujado, botones de operaciones y área de resultados. */
+/** Ventana común para el ABB y el AVL: árbol dibujado, operaciones y área de resultados. */
 public class VisorArbolView extends JFrame {
 
-    public final JButton btnInsertar  = button("INSERTAR", VERDE_OLIVA, VERDE_HOVER);
-    public final JButton btnBuscar    = button("BUSCAR", NARANJA, NARANJA_HOVER);
-    public final JButton btnEliminar  = button("ELIMINAR", TERRACOTA, TERRACOTA_HOVER);
-    public final JButton btnPreorden  = button("PREORDEN", MOSTAZA, MOSTAZA_HOVER);
-    public final JButton btnInorden   = button("INORDEN", MOSTAZA, MOSTAZA_HOVER);
-    public final JButton btnPostorden = button("POSTORDEN", MOSTAZA, MOSTAZA_HOVER);
-    public final JButton btnDemo      = button("DEMO", ROYAL_BLUE, ROYAL_BLUE_HOVER);
-    public final JButton btnReal      = button("DATOS BD", TAUPE, TAUPE_HOVER);
-    public final JButton btnVolver    = button("X", TERRACOTA, TERRACOTA_HOVER);
+    public final JButton btnInsertar  = primario("Insertar", IconoVector.Tipo.AGREGAR);
+    public final JButton btnBuscar    = secundario("Buscar", IconoVector.Tipo.BUSCAR);
+    public final JButton btnEliminar  = peligro("Eliminar", IconoVector.Tipo.ELIMINAR);
+    public final JButton btnPreorden  = discreto("Preorden", IconoVector.Tipo.ARBOL);
+    public final JButton btnInorden   = discreto("Inorden", IconoVector.Tipo.ARBOL);
+    public final JButton btnPostorden = discreto("Postorden", IconoVector.Tipo.ARBOL);
+    public final JButton btnDemo      = discreto("Demo", IconoVector.Tipo.DEMO);
+    public final JButton btnReal      = discreto("Datos BD", IconoVector.Tipo.DATOS);
+    public final JButton btnVolver    = botonVolver();
 
-    public final JTextArea areaResultados = new JTextArea(6, 40);
+    public final JTextArea areaResultados = new JTextArea(5, 40);
     private final PanelArbolGenerico panel = new PanelArbolGenerico();
 
-    /** conDemo = true agrega los botones DEMO y DATOS BD (se usan en el AVL). */
+    /** conDemo = true agrega los botones Demo y Datos BD (se usan en el AVL). */
     public VisorArbolView(String titulo, String subtitulo, boolean conDemo) {
         setTitle(titulo + " - C&R OrderManager");
-        setSize(960, 700);
-        setMinimumSize(new Dimension(820, 600));
+        setSize(conDemo ? 1120 : 940, 740);
+        setMinimumSize(new Dimension(conDemo ? 1060 : 900, 620));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
 
-        JPanel root = new JPanel(new BorderLayout());
-        root.setBackground(FONDO_EXTERNO);
-        root.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel root = raiz();
 
-        RoundedPanel card = new RoundedPanel(22, CREMA);
-        card.setLayout(new BorderLayout(0, 12));
-
-        JPanel headerOriginal = headerBar(titulo, subtitulo);
-        JPanel headerWrapper = new JPanel(new BorderLayout());
-        headerWrapper.setBackground(headerOriginal.getBackground());
-        headerWrapper.add(headerOriginal, BorderLayout.WEST);
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-        rightPanel.setOpaque(false);
-        btnVolver.setPreferredSize(new Dimension(60, 60));
-        rightPanel.add(btnVolver);
-        headerWrapper.add(rightPanel, BorderLayout.EAST);
-        card.add(headerWrapper, BorderLayout.NORTH);
+        java.util.List<JComponent> izquierda = new java.util.ArrayList<>(java.util.List.of(
+                btnInsertar, btnBuscar, btnEliminar));
+        if (conDemo) {
+            izquierda.add(btnDemo);
+            izquierda.add(btnReal);
+        }
+        JPanel superior = new JPanel();
+        superior.setOpaque(false);
+        superior.setLayout(new BoxLayout(superior, BoxLayout.Y_AXIS));
+        superior.add(encabezado(titulo, subtitulo, btnVolver));
+        superior.add(barraAcciones(
+                izquierda.toArray(new JComponent[0]),
+                new JComponent[]{btnPreorden, btnInorden, btnPostorden}));
+        root.add(superior, BorderLayout.NORTH);
 
         JScrollPane scrollArbol = new JScrollPane(panel);
-        scrollArbol.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 24));
-        scrollArbol.getViewport().setBackground(Color.WHITE);
-        card.add(scrollArbol, BorderLayout.CENTER);
+        scrollArbol.setBorder(BorderFactory.createEmptyBorder());
+        scrollArbol.getViewport().setBackground(SUPERFICIE);
+        RoundedPanel cardArbol = tarjeta();
+        cardArbol.add(scrollArbol, BorderLayout.CENTER);
+        root.add(cardArbol, BorderLayout.CENTER);
 
         areaResultados.setEditable(false);
         areaResultados.setLineWrap(true);
         areaResultados.setWrapStyleWord(true);
-        areaResultados.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        areaResultados.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        areaResultados.setForeground(TINTA);
+        areaResultados.setBackground(SUPERFICIE);
+        areaResultados.setBorder(new EmptyBorder(12, 16, 12, 16));
         JScrollPane scrollRes = new JScrollPane(areaResultados);
-        scrollRes.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 24));
+        scrollRes.setBorder(BorderFactory.createEmptyBorder());
+        scrollRes.getViewport().setBackground(SUPERFICIE);
+        RoundedPanel cardRes = tarjeta();
+        cardRes.add(scrollRes, BorderLayout.CENTER);
+        JPanel sur = new JPanel(new BorderLayout());
+        sur.setOpaque(false);
+        sur.setBorder(new EmptyBorder(16, 0, 0, 0));
+        sur.add(cardRes, BorderLayout.CENTER);
+        root.add(sur, BorderLayout.SOUTH);
 
-        JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 6));
-        botones.setBackground(CREMA);
-        java.util.List<JButton> lista = new java.util.ArrayList<>(java.util.List.of(
-                btnInsertar, btnBuscar, btnEliminar, btnPreorden, btnInorden, btnPostorden));
-        if (conDemo) {
-            lista.add(btnDemo);
-            lista.add(btnReal);
-        }
-        for (JButton b : lista) {
-            b.setPreferredSize(new Dimension(115, 40));
-            botones.add(b);
-        }
-
-        JPanel sur = new JPanel(new BorderLayout(0, 8));
-        sur.setBackground(CREMA);
-        sur.add(scrollRes, BorderLayout.CENTER);
-        sur.add(botones, BorderLayout.SOUTH);
-        card.add(sur, BorderLayout.SOUTH);
-
-        root.add(card, BorderLayout.CENTER);
         setContentPane(root);
         activarEscalado(this);
     }

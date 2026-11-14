@@ -9,7 +9,8 @@ public class IconoVector implements Icon {
 
     public enum Tipo {
         MESA, PLATO, RESERVA, SALIR,
-        AGREGAR, ELIMINAR, BUSCAR, ORDENAR, HISTORIAL
+        AGREGAR, ELIMINAR, BUSCAR, ORDENAR, HISTORIAL,
+        VOLVER, EDITAR, DESHACER, ARBOL, COLA, OCUPACION, ATENDER, INSERTAR_NODO, DEMO, DATOS
     }
 
     private final Tipo tipo;
@@ -108,6 +109,94 @@ public class IconoVector implements Icon {
                 g2.draw(new Line2D.Float(3, 6, 21, 6));                   // barras de distinta longitud
                 g2.draw(new Line2D.Float(3, 12, 16, 12));
                 g2.draw(new Line2D.Float(3, 18, 11, 18));
+            }
+            case VOLVER -> {
+                g2.draw(new Line2D.Float(20, 12, 4, 12));
+                Path2D punta = new Path2D.Float();
+                punta.moveTo(10, 6);
+                punta.lineTo(4, 12);
+                punta.lineTo(10, 18);
+                g2.draw(punta);
+            }
+            case EDITAR -> {
+                Path2D lapiz = new Path2D.Float();
+                lapiz.moveTo(4, 20);
+                lapiz.lineTo(5, 15);
+                lapiz.lineTo(15.5, 4.5);
+                lapiz.lineTo(19.5, 8.5);
+                lapiz.lineTo(9, 19);
+                lapiz.closePath();
+                g2.draw(lapiz);
+                g2.draw(new Line2D.Float(13, 7, 17, 11));
+            }
+            case DESHACER -> {
+                Path2D flecha = new Path2D.Float();
+                flecha.moveTo(8, 5);
+                flecha.lineTo(4, 9);
+                flecha.lineTo(8, 13);
+                g2.draw(flecha);
+                Path2D curva = new Path2D.Float();
+                curva.moveTo(4, 9);
+                curva.lineTo(14, 9);
+                curva.curveTo(17.5, 9, 20, 11, 20, 14);
+                curva.curveTo(20, 17, 17.5, 19, 14, 19);
+                curva.lineTo(9, 19);
+                g2.draw(curva);
+            }
+            case ARBOL -> {
+                g2.draw(new Ellipse2D.Float(9, 2.5f, 6, 6));
+                g2.draw(new Ellipse2D.Float(2.5f, 15.5f, 6, 6));
+                g2.draw(new Ellipse2D.Float(15.5f, 15.5f, 6, 6));
+                g2.draw(new Line2D.Float(10.5f, 8, 6.5f, 15.5f));
+                g2.draw(new Line2D.Float(13.5f, 8, 17.5f, 15.5f));
+            }
+            case COLA -> {
+                g2.draw(new Line2D.Float(9, 6, 21, 6));
+                g2.draw(new Line2D.Float(9, 12, 21, 12));
+                g2.draw(new Line2D.Float(9, 18, 21, 18));
+                g2.draw(new Line2D.Float(4, 6, 4.1f, 6));
+                g2.draw(new Line2D.Float(4, 12, 4.1f, 12));
+                g2.draw(new Line2D.Float(4, 18, 4.1f, 18));
+            }
+            case OCUPACION -> {
+                g2.draw(new RoundRectangle2D.Float(3, 3, 7, 7, 2, 2));
+                g2.draw(new RoundRectangle2D.Float(14, 3, 7, 7, 2, 2));
+                g2.draw(new RoundRectangle2D.Float(3, 14, 7, 7, 2, 2));
+                g2.draw(new RoundRectangle2D.Float(14, 14, 7, 7, 2, 2));
+            }
+            case ATENDER -> {
+                g2.draw(new Ellipse2D.Float(3, 3, 18, 18));
+                Path2D visto = new Path2D.Float();
+                visto.moveTo(8, 12.5);
+                visto.lineTo(11, 15.5);
+                visto.lineTo(16, 9);
+                g2.draw(visto);
+            }
+            case INSERTAR_NODO -> {
+                g2.draw(new Ellipse2D.Float(3, 3, 18, 18));
+                g2.draw(new Line2D.Float(12, 8, 12, 16));
+                g2.draw(new Line2D.Float(8, 12, 16, 12));
+            }
+            case DEMO -> {
+                Path2D play = new Path2D.Float();
+                play.moveTo(8, 5);
+                play.lineTo(19, 12);
+                play.lineTo(8, 19);
+                play.closePath();
+                g2.draw(play);
+            }
+            case DATOS -> {
+                g2.draw(new Ellipse2D.Float(4, 3, 16, 6));
+                g2.draw(new Line2D.Float(4, 6, 4, 18));
+                g2.draw(new Line2D.Float(20, 6, 20, 18));
+                Path2D fondo = new Path2D.Float();
+                fondo.moveTo(4, 18);
+                fondo.curveTo(4, 21, 20, 21, 20, 18);
+                g2.draw(fondo);
+                Path2D medio = new Path2D.Float();
+                medio.moveTo(4, 12);
+                medio.curveTo(4, 15, 20, 15, 20, 12);
+                g2.draw(medio);
             }
             case HISTORIAL -> {
                 g2.draw(new Ellipse2D.Float(3, 3, 18, 18));               // reloj

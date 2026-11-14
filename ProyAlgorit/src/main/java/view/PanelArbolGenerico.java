@@ -26,7 +26,7 @@ public class PanelArbolGenerico extends JPanel {
     private int contadorX;
 
     public PanelArbolGenerico() {
-        setBackground(Color.WHITE);
+        setBackground(SUPERFICIE);
     }
 
     public void actualizar(Dibujable raiz, String idResaltado) {
@@ -52,8 +52,9 @@ public class PanelArbolGenerico extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         if (raiz == null) {
-            g2.setColor(GRIS_TEXTO);
+            g2.setColor(TINTA_SUAVE);
             g2.setFont(FONT_SUB);
             g2.drawString("El árbol está vacío.", 30, 40);
             g2.dispose();
@@ -76,27 +77,27 @@ public class PanelArbolGenerico extends JPanel {
             xDer = dibujar(g2, nodo.derecho(), nivel + 1);
         }
 
-        g2.setColor(LINEA_CAMPO);
+        g2.setColor(BORDE_FUERTE);
         g2.setStroke(new BasicStroke(1.6f));
         if (xIzq >= 0) g2.drawLine(x, y, xIzq, y + SEP_Y);
         if (xDer >= 0) g2.drawLine(x, y, xDer, y + SEP_Y);
 
         boolean resaltado = idResaltado != null && idResaltado.equals(nodo.id());
-        g2.setColor(resaltado ? NARANJA : VERDE_OLIVA);
+        g2.setColor(resaltado ? ACENTO : OLIVA);
         g2.fillOval(x - RADIO, y - RADIO, RADIO * 2, RADIO * 2);
         g2.setColor(Color.WHITE);
-        g2.setFont(FONT_BOTON);
+        g2.setFont(FONT_BOTON_B);
         FontMetrics fm = g2.getFontMetrics();
         g2.drawString(nodo.id(), x - fm.stringWidth(nodo.id()) / 2, y + fm.getAscent() / 2 - 1);
 
-        g2.setColor(TEXTO_OSCURO);
-        g2.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        g2.setColor(TINTA);
+        g2.setFont(new Font(FAMILIA, Font.PLAIN, 11));
         fm = g2.getFontMetrics();
         String nombre = nodo.nombre();
         if (nombre.length() > 11) nombre = nombre.substring(0, 10) + "…";
         g2.drawString(nombre, x - fm.stringWidth(nombre) / 2, y + RADIO + 14);
         if (nodo.extra() != null) {
-            g2.setColor(GRIS_TEXTO);
+            g2.setColor(TINTA_SUAVE);
             g2.drawString(nodo.extra(), x - fm.stringWidth(nodo.extra()) / 2, y + RADIO + 27);
         }
         return x;

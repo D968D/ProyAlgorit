@@ -1,119 +1,75 @@
 package view;
 
 import javax.swing.*;
-
-import static view.UIStyle.CREMA;
-import static view.UIStyle.VERDE_HOVER;
-import static view.UIStyle.VERDE_OLIVA;
-import static view.UIStyle.button;
-
 import java.awt.*;
+
+import static view.UIStyle.*;
 
 public class AgregarPlatoDialog extends JDialog {
 
     private final JTextField txtNombre    = new JTextField();
     private final JTextField txtPrecio    = new JTextField();
     private final JTextField txtCategoria = new JTextField();
-    private final JButton btnAgregar      = button("AGREGAR", VERDE_OLIVA, VERDE_HOVER);
+    private final JLabel lblError = mensajeError();
 
     private boolean confirmado = false;
 
     public AgregarPlatoDialog(JFrame parent) {
         super(parent, "Agregar plato", true);
-        setSize(360, 240);
-        setLocationRelativeTo(parent);
-        setResizable(false);
-        setLayout(new BorderLayout(10, 10));
-        getContentPane().setBackground(CREMA);
-        // Tamaño fijo de los campos para que se vean y se pueda escribir
-        Dimension tamanoCampo = new Dimension(200, 28);
-        txtNombre.setPreferredSize(tamanoCampo);
-        txtPrecio.setPreferredSize(tamanoCampo);
-        txtCategoria.setPreferredSize(tamanoCampo);
 
-        JPanel form = new JPanel(new GridBagLayout());
-        form.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
-        form.setBackground(CREMA);
+        estilarCampo(txtNombre);
+        estilarCampo(txtPrecio);
+        estilarCampo(txtCategoria);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
-        gbc.anchor = GridBagConstraints.WEST;
+        JPanel root = panelDialogo("Nuevo plato", "Se añadirá a la carta");
+        JPanel centro = new JPanel(new BorderLayout(0, 10));
+        centro.setOpaque(false);
+        centro.add(formulario(
+                new Object[]{"Nombre", txtNombre},
+                new Object[]{"Precio (S/)", txtPrecio, "Categoría", txtCategoria}), BorderLayout.CENTER);
+        centro.add(lblError, BorderLayout.SOUTH);
+        root.add(centro, BorderLayout.CENTER);
 
-        // Fila nombre
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        form.add(new JLabel("Nombre:"), gbc);
+        RoundedButton btnCancelar = secundario("Cancelar", null);
+        RoundedButton btnAgregar = primario("Agregar", null);
+        root.add(pieDialogo(btnCancelar, btnAgregar), BorderLayout.SOUTH);
+        setContentPane(root);
 
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        form.add(txtNombre, gbc);
-
-        // Fila precio
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        form.add(new JLabel("Precio:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        form.add(txtPrecio, gbc);
-
-        // Fila categoría
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        form.add(new JLabel("Categoría:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        form.add(txtCategoria, gbc);
-
-        JPanel panelBoton = new JPanel();
-        panelBoton.setBorder(BorderFactory.createEmptyBorder(5, 0, 15, 0));
-        panelBoton.add(btnAgregar);
-        panelBoton.setBackground(CREMA);
-
-        add(form, BorderLayout.CENTER);
-        add(panelBoton, BorderLayout.SOUTH);
-
+        btnCancelar.addActionListener(e -> dispose());
         btnAgregar.addActionListener(e -> {
             if (validar()) {
                 confirmado = true;
                 dispose();
             }
         });
-        // Enfocar el primer campo al abrir
+        getRootPane().setDefaultButton(btnAgregar);
+        ajustarDialogo(this, parent, 460);
         SwingUtilities.invokeLater(() -> txtNombre.requestFocusInWindow());
     }
 
+    private void error(String mensaje, JComponent foco) {
+        lblError.setText(mensaje);
+        foco.requestFocusInWindow();
+    }
+
     private boolean validar() {
+        lblError.setText(" ");
         if (txtNombre.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingrese el nombre del plato.");
-            txtNombre.requestFocusInWindow();
+            error("Ingresa el nombre del plato.", txtNombre);
             return false;
         }
         try {
             double p = Double.parseDouble(txtPrecio.getText().trim().replace(',', '.'));
             if (p <= 0) {
-                JOptionPane.showMessageDialog(this, "El precio debe ser mayor a 0.");
-                txtPrecio.requestFocusInWindow();
+                error("El precio debe ser mayor a 0.", txtPrecio);
                 return false;
             }
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Ingrese un precio numérico válido (ej: 25.50).");
-            txtPrecio.requestFocusInWindow();
+            error("Ingresa un precio numérico válido (ej: 25.50).", txtPrecio);
             return false;
         }
         if (txtCategoria.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingrese la categoría.");
-            txtCategoria.requestFocusInWindow();
+            error("Ingresa la categoría.", txtCategoria);
             return false;
         }
         return true;

@@ -2,54 +2,38 @@ package view;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
-import view.UIStyle.RoundedPanel;
-
 import java.awt.*;
 
 import static view.UIStyle.*;
 
 public class MesaView extends JFrame {
 
-    public final JButton btnAgregar    = button("AGREGAR", VERDE_OLIVA, VERDE_HOVER);
-    public final JButton btnActualizar = button("ACTUALIZAR", NARANJA, NARANJA_HOVER);
-    public final JButton btnEliminar   = button("ELIMINAR", TERRACOTA, TERRACOTA_HOVER);
-    public final JButton btnOcupacion  = button("OCUPACIÓN", ROYAL_BLUE, ROYAL_BLUE_HOVER);
-    public final JButton btnVolver     = button("X", TERRACOTA, TERRACOTA_HOVER);
+    public final JButton btnAgregar    = primario("Agregar", IconoVector.Tipo.AGREGAR);
+    public final JButton btnActualizar = secundario("Actualizar", IconoVector.Tipo.EDITAR);
+    public final JButton btnEliminar   = peligro("Eliminar", IconoVector.Tipo.ELIMINAR);
+    public final JButton btnOcupacion  = discreto("Ocupación", IconoVector.Tipo.OCUPACION);
+    public final JButton btnVolver     = botonVolver();
 
     public final DefaultTableModel modeloTabla;
     public final JTable tabla;
 
     public MesaView() {
         setTitle("Gestión de Mesas - C&R OrderManager");
-        setSize(700,420);
+        setSize(820, 540);
         setLocationRelativeTo(null);
-        setMinimumSize(new Dimension(640, 360));
+        setMinimumSize(new Dimension(720, 460));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
 
-        JPanel root = new JPanel(new BorderLayout());
-        root.setBackground(FONDO_EXTERNO);
-        root.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel root = raiz();
 
-        RoundedPanel card = new RoundedPanel(22, CREMA);
-        card.setLayout(new BorderLayout(0, 12));
-        JPanel headerOriginal = headerBar("Gestión de Mesas", "Disponibilidad y capacidad del salón");
-        
-        JPanel headerWrapper = new JPanel(new BorderLayout());
-        headerWrapper.setBackground(headerOriginal.getBackground()); // Hereda el verde oscuro automáticamente
-        
-        headerWrapper.add(headerOriginal, BorderLayout.WEST);
-        
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10,10 ));
-        rightPanel.setOpaque(false);
-        
-        btnVolver.setPreferredSize(new Dimension(60, 60));
-        rightPanel.add(btnVolver);
-        
-        headerWrapper.add(rightPanel, BorderLayout.EAST);
-        
-        card.add(headerWrapper, BorderLayout.NORTH);
+        JPanel superior = new JPanel();
+        superior.setOpaque(false);
+        superior.setLayout(new BoxLayout(superior, BoxLayout.Y_AXIS));
+        superior.add(encabezado("Mesas", "Disponibilidad y capacidad del salón", btnVolver));
+        superior.add(barraAcciones(
+                new JComponent[]{btnAgregar, btnActualizar, btnEliminar},
+                new JComponent[]{btnOcupacion}));
+        root.add(superior, BorderLayout.NORTH);
 
         modeloTabla = new DefaultTableModel(new String[]{"N° Mesa", "Capacidad", "Estado"}, 0) {
             @Override
@@ -57,24 +41,16 @@ public class MesaView extends JFrame {
                 return false; // la tabla es solo de lectura, se edita con el botón Actualizar
             }
         };
-        tabla = new JTable(modeloTabla);
-        styleTable(tabla);
+        tabla = crearTabla(modeloTabla, "Aún no hay mesas. Usa «Agregar» para registrar la primera.");
+        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scroll = new JScrollPane(tabla);
-        scroll.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 24));
-        scroll.getViewport().setBackground(Color.WHITE);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+        scroll.getViewport().setBackground(SUPERFICIE);
+        RoundedPanel card = tarjeta();
         card.add(scroll, BorderLayout.CENTER);
-
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 16));
-        panelBotones.setBackground(CREMA);
-        for (JButton b : new JButton[]{btnAgregar, btnActualizar, btnEliminar, btnOcupacion}) {
-            b.setPreferredSize(new Dimension(120, 40));
-            panelBotones.add(b);
-        }
-        
-        card.add(panelBotones, BorderLayout.SOUTH);
-
         root.add(card, BorderLayout.CENTER);
+
         setContentPane(root);
         activarEscalado(this);
     }

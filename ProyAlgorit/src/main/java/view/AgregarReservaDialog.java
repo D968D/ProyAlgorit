@@ -12,7 +12,7 @@ import java.util.List;
 
 import static view.UIStyle.*;
 
-/** Formulario único para registrar una reserva (reemplaza la cadena de cuadros de diálogo). */
+/** Formulario único para registrar una reserva. */
 public class AgregarReservaDialog extends JDialog {
 
     private static final DateTimeFormatter FECHA = DateTimeFormatter.ofPattern("d/M/yyyy");
@@ -26,11 +26,10 @@ public class AgregarReservaDialog extends JDialog {
 
     private boolean confirmado = false;
 
+    private final JLabel lblError = mensajeError();
+
     public AgregarReservaDialog(JFrame parent, List<Mesa> mesas) {
         super(parent, "Nueva reserva", true);
-        setSize(420, 430);
-        setResizable(false);
-        setLocationRelativeTo(parent);
 
         for (Mesa m : mesas) {
             cbMesa.addItem(m);
@@ -43,42 +42,33 @@ public class AgregarReservaDialog extends JDialog {
                 if (value instanceof Mesa m) {
                     setText("Mesa " + m.getNumeroMesa() + "  (capacidad " + m.getCapacidad() + ")");
                 }
+                setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
+                setBackground(sel ? OLIVA_TINTE : SUPERFICIE);
+                setForeground(TINTA);
                 return this;
             }
         });
 
-        JPanel root = new JPanel(new BorderLayout());
-        root.setBackground(FONDO_EXTERNO);
-        root.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
+        estilarCampo(txtCliente);
+        estilarCampo(txtFecha);
+        estilarCampo(txtHora);
+        estilarCampo(spPersonas);
+        estilarCampo(cbMesa);
 
-        RoundedPanel card = new RoundedPanel(22, CREMA);
-        card.setLayout(new BorderLayout());
-        card.add(headerBar("Nueva reserva", "Datos del cliente y la mesa"), BorderLayout.NORTH);
+        JPanel root = panelDialogo("Nueva reserva", "Datos del cliente y de la mesa");
+        JPanel centro = new JPanel(new BorderLayout(0, 10));
+        centro.setOpaque(false);
+        centro.add(formulario(
+                new Object[]{"Cliente", txtCliente},
+                new Object[]{"Fecha (d/m/aaaa)", txtFecha, "Hora (HH:mm)", txtHora},
+                new Object[]{"Personas", spPersonas, "Mesa", cbMesa}), BorderLayout.CENTER);
+        centro.add(lblError, BorderLayout.SOUTH);
+        root.add(centro, BorderLayout.CENTER);
 
-        JPanel form = new JPanel(new GridBagLayout());
-        form.setOpaque(false);
-        form.setBorder(BorderFactory.createEmptyBorder(14, 24, 4, 24));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 4, 6, 4);
-        gbc.anchor = GridBagConstraints.WEST;
-
-        agregarFila(form, gbc, 0, "Cliente", txtCliente);
-        agregarFila(form, gbc, 1, "Fecha (d/m/aaaa)", txtFecha);
-        agregarFila(form, gbc, 2, "Hora (HH:mm)", txtHora);
-        agregarFila(form, gbc, 3, "Personas", spPersonas);
-        agregarFila(form, gbc, 4, "Mesa", cbMesa);
-        card.add(form, BorderLayout.CENTER);
-
-        RoundedButton btnGuardar  = button("GUARDAR", IconoVector.Tipo.AGREGAR, VERDE_OLIVA, VERDE_HOVER);
-        RoundedButton btnCancelar = button("CANCELAR", TAUPE, TAUPE_HOVER);
-        btnGuardar.setPreferredSize(new Dimension(140, 38));
-        btnCancelar.setPreferredSize(new Dimension(120, 38));
-
-        JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 12));
-        botones.setOpaque(false);
-        botones.add(btnGuardar);
-        botones.add(btnCancelar);
-        card.add(botones, BorderLayout.SOUTH);
+        RoundedButton btnCancelar = secundario("Cancelar", null);
+        RoundedButton btnGuardar  = primario("Guardar", null);
+        root.add(pieDialogo(btnCancelar, btnGuardar), BorderLayout.SOUTH);
+        setContentPane(root);
 
         btnGuardar.addActionListener(e -> {
             if (validar()) {
@@ -88,63 +78,43 @@ public class AgregarReservaDialog extends JDialog {
         });
         btnCancelar.addActionListener(e -> dispose());
         getRootPane().setDefaultButton(btnGuardar);
-
-        root.add(card, BorderLayout.CENTER);
-        setContentPane(root);
+        ajustarDialogo(this, parent, 500);
         SwingUtilities.invokeLater(() -> txtCliente.requestFocusInWindow());
     }
 
-    private void agregarFila(JPanel form, GridBagConstraints gbc, int fila, String etiqueta, JComponent campo) {
-        JLabel lbl = new JLabel(etiqueta);
-        lbl.setFont(FONT_HEADER);
-        lbl.setForeground(TEXTO_OSCURO);
-        campo.setFont(FONT_TABLA);
-        campo.setPreferredSize(new Dimension(170, 30));
-
-        gbc.gridy = fila;
-        gbc.gridx = 0;
-        gbc.weightx = 0;
-        gbc.fill = GridBagConstraints.NONE;
-        form.add(lbl, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        form.add(campo, gbc);
-    }
-
     private boolean validar() {
+        lblError.setText(" ");
         if (txtCliente.getText().trim().isEmpty()) {
-            aviso("Ingrese el nombre del cliente.", txtCliente);
+            aviso("Ingresa el nombre del cliente.", txtCliente);
             return false;
         }
         try {
             LocalDate.parse(txtFecha.getText().trim(), FECHA);
         } catch (DateTimeParseException ex) {
-            aviso("Fecha inválida. Use el formato d/m/aaaa (ej: 15/10/2026).", txtFecha);
+            aviso("Fecha inválida. Usa el formato d/m/aaaa (ej: 15/10/2026).", txtFecha);
             return false;
         }
         try {
             LocalTime.parse(txtHora.getText().trim(), DateTimeFormatter.ofPattern("H:mm"));
         } catch (DateTimeParseException ex) {
-            aviso("Hora inválida. Use el formato HH:mm (ej: 20:30).", txtHora);
+            aviso("Hora inválida. Usa el formato HH:mm (ej: 20:30).", txtHora);
             return false;
         }
         Mesa mesa = (Mesa) cbMesa.getSelectedItem();
         if (mesa == null) {
-            aviso("No hay mesas registradas. Registre mesas antes de crear una reserva.", cbMesa);
+            aviso("No hay mesas registradas. Registra mesas antes de crear una reserva.", cbMesa);
             return false;
         }
         if (getPersonas() > mesa.getCapacidad()) {
             aviso("La mesa " + mesa.getNumeroMesa() + " tiene capacidad para " + mesa.getCapacidad()
-                    + " personas. Elija otra mesa o reduzca la cantidad.", cbMesa);
+                    + " personas. Elige otra mesa o reduce la cantidad.", cbMesa);
             return false;
         }
         return true;
     }
 
     private void aviso(String mensaje, JComponent foco) {
-        JOptionPane.showMessageDialog(this, mensaje, "Datos incompletos", JOptionPane.WARNING_MESSAGE);
+        lblError.setText(mensaje);
         foco.requestFocusInWindow();
     }
 

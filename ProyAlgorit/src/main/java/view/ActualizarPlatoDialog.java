@@ -1,66 +1,44 @@
 package view;
 
 import javax.swing.*;
-
-import static view.UIStyle.CREMA;
-import static view.UIStyle.NARANJA;
-import static view.UIStyle.NARANJA_HOVER;
-import static view.UIStyle.button;
-
 import java.awt.*;
 
+import static view.UIStyle.*;
 
 public class ActualizarPlatoDialog extends JDialog {
 
     private final JTextField txtPrecio = new JTextField();
-    private final JButton btnActualizar = button("ACTUALIZAR", NARANJA, NARANJA_HOVER);
+    private final JLabel lblError = mensajeError();
 
     private boolean confirmado = false;
 
     public ActualizarPlatoDialog(JFrame parent, double precioActual) {
         super(parent, "Actualizar precio", true);
-        setSize(300, 160);
-        setLocationRelativeTo(parent);
-        setResizable(false);
-        setLayout(new BorderLayout(10, 10));
-        getContentPane().setBackground(CREMA);
 
-        txtPrecio.setPreferredSize(new Dimension(160, 28));
+        estilarCampo(txtPrecio);
         txtPrecio.setText(String.valueOf(precioActual));
 
-        JPanel form = new JPanel(new GridBagLayout());
-        form.setBorder(BorderFactory.createEmptyBorder(25, 20, 10, 20));
-        form.setBackground(CREMA);
+        JPanel root = panelDialogo("Actualizar precio", "Escribe el nuevo precio del plato");
+        JPanel centro = new JPanel(new BorderLayout(0, 10));
+        centro.setOpaque(false);
+        centro.add(formulario(new Object[]{"Precio (S/)", txtPrecio}), BorderLayout.CENTER);
+        centro.add(lblError, BorderLayout.SOUTH);
+        root.add(centro, BorderLayout.CENTER);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
-        gbc.anchor = GridBagConstraints.WEST;
+        RoundedButton btnCancelar = secundario("Cancelar", null);
+        RoundedButton btnActualizar = primario("Actualizar", null);
+        root.add(pieDialogo(btnCancelar, btnActualizar), BorderLayout.SOUTH);
+        setContentPane(root);
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        form.add(new JLabel("Precio:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        form.add(txtPrecio, gbc);
-
-        JPanel panelBoton = new JPanel();
-        panelBoton.setBorder(BorderFactory.createEmptyBorder(5, 0, 15, 0));
-        panelBoton.add(btnActualizar);
-        panelBoton.setBackground(CREMA);
-
-        add(form, BorderLayout.CENTER);
-        add(panelBoton, BorderLayout.SOUTH);
-
+        btnCancelar.addActionListener(e -> dispose());
         btnActualizar.addActionListener(e -> {
             if (validar()) {
                 confirmado = true;
                 dispose();
             }
         });
+        getRootPane().setDefaultButton(btnActualizar);
+        ajustarDialogo(this, parent, 380);
 
         SwingUtilities.invokeLater(() -> {
             txtPrecio.requestFocusInWindow();
@@ -69,15 +47,16 @@ public class ActualizarPlatoDialog extends JDialog {
     }
 
     private boolean validar() {
+        lblError.setText(" ");
         try {
             double p = Double.parseDouble(txtPrecio.getText().trim().replace(',', '.'));
             if (p <= 0) {
-                JOptionPane.showMessageDialog(this, "El precio debe ser mayor a 0.");
+                lblError.setText("El precio debe ser mayor a 0.");
                 txtPrecio.requestFocusInWindow();
                 return false;
             }
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Ingrese un precio numérico válido (ej: 25.50).");
+            lblError.setText("Ingresa un precio numérico válido (ej: 25.50).");
             txtPrecio.requestFocusInWindow();
             return false;
         }
