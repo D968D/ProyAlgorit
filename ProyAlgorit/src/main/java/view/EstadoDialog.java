@@ -1,28 +1,26 @@
 package view;
 
 import javax.swing.*;
-
-import static view.UIStyle.CREMA;
-import static view.UIStyle.ROYAL_BLUE;
-import static view.UIStyle.ROYAL_BLUE_HOVER;
-import static view.UIStyle.button;
-
 import java.awt.*;
+
+import static view.UIStyle.*;
 
 public class EstadoDialog extends JDialog {
 
-    public final JButton btnLibre     = button("LIBRE", ROYAL_BLUE_HOVER, ROYAL_BLUE);
-    public final JButton btnOcupado   = button("OCUPADO", ROYAL_BLUE_HOVER, ROYAL_BLUE);
+    public final JButton btnLibre   = secundario("Libre", null);
+    public final JButton btnOcupado = secundario("Ocupado", null);
     private String estadoSeleccionado = null;
 
     public EstadoDialog(JFrame padre) {
         super(padre, "Actualizar estado de mesa", true); // true = modal
-        setSize(300, 150);
-        setLocationRelativeTo(padre);
-        setLayout(new FlowLayout(FlowLayout.CENTER, 20, 40));
-        getContentPane().setBackground(CREMA);
-        add(btnLibre);
-        add(btnOcupado);
+
+        JPanel root = panelDialogo("Estado de la mesa", "Elige cómo queda la mesa ahora");
+        JPanel opciones = new JPanel(new GridLayout(1, 2, 12, 0));
+        opciones.setOpaque(false);
+        opciones.add(btnLibre);
+        opciones.add(btnOcupado);
+        root.add(opciones, BorderLayout.CENTER);
+        setContentPane(root);
 
         btnLibre.addActionListener(e -> {
             estadoSeleccionado = "LIBRE";
@@ -32,6 +30,7 @@ public class EstadoDialog extends JDialog {
             estadoSeleccionado = "OCUPADO";
             dispose();
         });
+        ajustarDialogo(this, padre, 380);
     }
 
     // Devuelve "LIBRE", "OCUPADO", o null si se cerro sin elegir
