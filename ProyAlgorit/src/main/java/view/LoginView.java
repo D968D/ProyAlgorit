@@ -1,6 +1,6 @@
 package view;
 
-import dao.LoginDAO;
+import controller.LoginController;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
@@ -21,7 +21,7 @@ public class LoginView extends JFrame {
     private final JTextField txtUsuario = new JTextField();
     private final JPasswordField txtContrasena = new JPasswordField();
     private final RoundedButton btnIngresar = new RoundedButton("INGRESAR", NARANJA, NARANJA_HOVER);
-    private final LoginDAO loginDAO = new LoginDAO();
+    private final LoginController loginController = new LoginController();
 
     public LoginView() {
         setTitle("Iniciar sesión - C&R OrderManager");
@@ -189,11 +189,15 @@ public class LoginView extends JFrame {
             return;
         }
 
-        boolean valido = loginDAO.validar(usuario, contra);
+        LoginController.Resultado resultado = loginController.iniciarSesion(usuario, contra);
 
-        if (valido) {
+        if (resultado == LoginController.Resultado.OK) {
             dispose();
             new MenuPrincipal().setVisible(true);
+        } else if (resultado == LoginController.Resultado.SIN_CONEXION) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo conectar con la base de datos.\nRevise db.properties (o las variables DB_URL, DB_USER, DB_PASSWORD) y que el servidor esté activo.",
+                    "Sin conexión", JOptionPane.ERROR_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this,
                     "Usuario o contraseña incorrectos.",

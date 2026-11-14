@@ -33,6 +33,8 @@ public class PlatoController {
         view.btnEliminar.addActionListener(e -> eliminar());
         view.btnDeshacer.addActionListener(e -> deshacer());
         view.btnHistorial.addActionListener(e -> mostrarHistorial());
+        view.btnArbol.addActionListener(e -> abrirArbol());
+        view.btnABB.addActionListener(e -> abrirABB());
         view.btnVolver.addActionListener(e -> volver());
 
         view.setVisible(true);
@@ -58,6 +60,13 @@ public class PlatoController {
         dialog.setVisible(true);
 
         if (!dialog.isConfirmado()) {
+            return;
+        }
+
+        if (platoDAO.existeNombre(dialog.getNombre())) {
+            JOptionPane.showMessageDialog(view,
+                    "Ya existe un plato llamado \"" + dialog.getNombre().trim() + "\".\nCada plato debe tener un nombre único.",
+                    "Nombre repetido", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -217,10 +226,9 @@ public class PlatoController {
                 ok = platoDAO.actualizarPrecio(anterior.getIdPlato(), anterior.getPrecio());
                 break;
             case ELIMINAR:
-                // Revertir eliminar = volver a insertar el plato
-                Plato aRestaurar = op.getPlatoAntes();
-                Plato copia = new Plato(0, aRestaurar.getNombre(), aRestaurar.getPrecio(), aRestaurar.getCategoria());
-                ok = platoDAO.insertar(copia);
+                // Revertir eliminar = volver a insertar el plato CON SU ID ORIGINAL,
+                // para que las operaciones anteriores de la pila sigan apuntando a él.
+                ok = platoDAO.restaurar(op.getPlatoAntes());
                 break;
         }
 
@@ -251,6 +259,17 @@ public class PlatoController {
         JOptionPane.showMessageDialog(view, scroll,
                 "Historial de operaciones (Pila LIFO)",
                 JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /** Abre el árbol binario de la carta (Cap. 8); al cambiar platos allí se recarga esta tabla. */
+    private void abrirArbol() {
+        new ArbolPlatosController(new view.ArbolPlatosView(), this::cargarPlatos);
+    }
+
+    /** Abre el ABB de platos por nombre (Cap. 9). */
+    private void abrirABB() {
+        new ArbolABBController(new view.VisorArbolView("ABB de Platos",
+                "Búsqueda por nombre; inorden = carta de la A a la Z", false), this::cargarPlatos);
     }
 
     private void volver(){

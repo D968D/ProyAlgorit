@@ -2,6 +2,9 @@ package view;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import view.UIStyle.RoundedPanel;
+
 import java.awt.*;
 
 import static view.UIStyle.*;
@@ -11,6 +14,7 @@ public class MesaView extends JFrame {
     public final JButton btnAgregar    = button("AGREGAR", VERDE_OLIVA, VERDE_HOVER);
     public final JButton btnActualizar = button("ACTUALIZAR", NARANJA, NARANJA_HOVER);
     public final JButton btnEliminar   = button("ELIMINAR", TERRACOTA, TERRACOTA_HOVER);
+    public final JButton btnOcupacion  = button("OCUPACIÓN", ROYAL_BLUE, ROYAL_BLUE_HOVER);
     public final JButton btnVolver     = button("X", TERRACOTA, TERRACOTA_HOVER);
 
     public final DefaultTableModel modeloTabla;
@@ -18,9 +22,9 @@ public class MesaView extends JFrame {
 
     public MesaView() {
         setTitle("Gestión de Mesas - C&R OrderManager");
-        setSize(560,420);
+        setSize(700,420);
         setLocationRelativeTo(null);
-        setMinimumSize(new Dimension(480, 360));
+        setMinimumSize(new Dimension(640, 360));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -63,7 +67,7 @@ public class MesaView extends JFrame {
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 16));
         panelBotones.setBackground(CREMA);
-        for (JButton b : new JButton[]{btnAgregar, btnActualizar, btnEliminar}) {
+        for (JButton b : new JButton[]{btnAgregar, btnActualizar, btnEliminar, btnOcupacion}) {
             b.setPreferredSize(new Dimension(120, 40));
             panelBotones.add(b);
         }

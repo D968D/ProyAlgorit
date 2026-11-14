@@ -25,20 +25,23 @@ CREATE TABLE platos (
     categoria   VARCHAR(50)
 );
 
+-- El nombre del plato no se puede repetir (sin distinguir mayusculas): es la clave del ABB.
+CREATE UNIQUE INDEX ux_platos_nombre ON platos (lower(nombre));
+
 CREATE TABLE mesas (
     numero_mesa INT PRIMARY KEY,
     capacidad   INT NOT NULL,
     estado      VARCHAR(20) DEFAULT 'LIBRE'
 );
 
-CREATE TABLE IF NOT EXISTS reservas (
-    idreserva SERIAL PRIMARY KEY,
-    cliente VARCHAR(100) NOT NULL,
-    fecha DATE NOT NULL,
-    hora TIME NOT NULL,
+CREATE TABLE reservas (
+    idreserva         SERIAL PRIMARY KEY,
+    cliente           VARCHAR(100) NOT NULL,
+    fecha             DATE NOT NULL,
+    hora              TIME NOT NULL,
     cantidad_personas INT NOT NULL,
-    numero_mesa INT REFERENCES mesas(numero_mesa),
-    estado VARCHAR(20) DEFAULT 'PENDIENTE'
+    numero_mesa       INT NOT NULL REFERENCES mesas(numero_mesa) ON DELETE CASCADE,
+    estado            VARCHAR(20) DEFAULT 'Pendiente'  -- Pendiente / Atendida
 );
 
 CREATE TABLE pedidos (
@@ -65,9 +68,10 @@ CREATE TABLE detalle_pedido (
 -- aparezca algo en la tabla, igual que en tu imagen de ejemplo)
 -- =========================================================
 
+-- Las contraseñas se guardan con hash PBKDF2 (clase util.PasswordUtil). Ambos usuarios entran con: 123456
 INSERT INTO usuarios (nombre, username, "contraseña", rol) VALUES
-('Administrador', 'admin', '123456', 'ADMINISTRADOR'),
-('Michelle', 'michelle', '123456', 'ESTANDAR');
+('Administrador', 'admin', 'pbkdf2$4VQvQ06IpWd9mdq/J1LVjg==$SRXDC6i3/Tm2FEZ7tu5AqTVBng4CsjjAjoTAIVU9Gjg=', 'ADMINISTRADOR'),
+('Michelle', 'michelle', 'pbkdf2$m8HsEyWs+FFaVdzMLhr5OA==$EPzSS0SzWZ0Nv1ky8eNSACCSzlU0vWDSQ7Q+QU/+20s=', 'ESTANDAR');
 
 INSERT INTO mesas (numero_mesa, capacidad, estado) VALUES
 (1, 4, 'LIBRE'),
@@ -82,6 +86,7 @@ INSERT INTO platos (nombre, precio, categoria) VALUES
 ('Chicha Morada', 8.00, 'Bebidas');
 
 INSERT INTO reservas (cliente, fecha, hora, cantidad_personas, numero_mesa, estado) VALUES
-('María López', '2026-10-11', '19:30:00', 4, 1, 'PENDIENTE'),
-('Carlos Ruiz', '2026-10-11', '20:00:00', 2, 2, 'CONFIRMADA'),
-('Ana Torres', '2026-10-12', '18:45:00', 5, 3, 'PENDIENTE');
+('Carlos Ramos',  '2026-10-15', '19:30', 4, 1, 'Pendiente'),
+('Lucía Torres',  '2026-10-15', '20:00', 2, 5, 'Pendiente'),
+('Familia Quispe','2026-10-16', '13:00', 6, 4, 'Pendiente'),
+('Marco Salas',   '2026-10-14', '21:00', 3, 3, 'Atendida');

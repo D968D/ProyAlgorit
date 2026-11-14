@@ -14,9 +14,9 @@ import java.util.List;
 
 public class MesaController {
 
-    private static final int CAPACIDAD_MAXIMA = 20;
     private static final int MESAS_POR_ZONA = 7;
     private static final String[] ZONAS = {"Salon", "Terraza", "VIP"};
+    private static final int CAPACIDAD_MAXIMA = ZONAS.length * MESAS_POR_ZONA; // 21 mesas
 
     private final MesaView view;
     private final MesaDAO mesaDAO;
@@ -34,6 +34,7 @@ public class MesaController {
         view.btnAgregar.addActionListener(e -> agregarMesa());
         view.btnActualizar.addActionListener(e -> actualizarEstado());
         view.btnEliminar.addActionListener(e -> eliminarMesa());
+        view.btnOcupacion.addActionListener(e -> mostrarOcupacion());
         view.btnVolver.addActionListener(e -> volver());
         view.setVisible(true);
     }
@@ -48,7 +49,7 @@ public class MesaController {
             view.modeloTabla.addRow(new Object[]{mesa.getNumeroMesa(), mesa.getCapacidad(), mesa.getEstado()});
         }
 
-        matrizOcupacion.cargarDesdeMesas(arregloMesas.recorrer());
+        refrescarMatriz();
     }
     private void agregarMesa() {
         AgregarMesaDialog dialog = new AgregarMesaDialog(view,arregloMesas);
@@ -91,7 +92,7 @@ public class MesaController {
 
         if (okBD && okArreglo) {
             view.modeloTabla.setValueAt(nuevoEstado, fila, 2);
-            matrizOcupacion.cargarDesdeMesas(arregloMesas.recorrer());
+            refrescarMatriz();
             JOptionPane.showMessageDialog(view, "Mesa " + numeroMesa + " actualizada a " + nuevoEstado + ".");
         } else {
             JOptionPane.showMessageDialog(view, "No se pudo actualizar la mesa.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -108,7 +109,7 @@ public class MesaController {
         int numeroMesa = (int) view.modeloTabla.getValueAt(fila, 0);
 
         boolean okBD = mesaDAO.eliminar(numeroMesa);
-        boolean okArreglo = arregloMesas.eliminarLogico(numeroMesa);
+        boolean okArreglo = arregloMesas.eliminar(numeroMesa);
 
         if (okBD && okArreglo) {
             cargarMesas(); // recarga la tabla y el arreglo
@@ -117,6 +118,29 @@ public class MesaController {
             JOptionPane.showMessageDialog(view, "No se pudo eliminar la mesa.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    /** Recarga la matriz (zona x mesa) desde el arreglo, empezando de cero. */
+    private void refrescarMatriz() {
+        matrizOcupacion.limpiar();
+        matrizOcupacion.cargarDesdeMesas(arregloMesas.recorrer());
+    }
+
+    /** Muestra la matriz de ocupación y demuestra copia y comparación del arreglo de mesas. */
+    private void mostrarOcupacion() {
+        ArregloMesas copia = arregloMesas.copiar();
+        boolean iguales = arregloMesas.compararConfiguracion(copia);
+
+        String texto = "MATRIZ DE OCUPACIÓN (zona x mesa)\n\n" + matrizOcupacion.mostrar()
+                + "\nCopia del arreglo: " + copia.getCantidad() + " mesa(s)."
+                + "\nComparación original vs copia: " + (iguales ? "IGUALES" : "DIFERENTES");
+
+        JTextArea area = new JTextArea(texto);
+        area.setEditable(false);
+        area.setFont(new java.awt.Font(java.awt.Font.MONOSPACED, java.awt.Font.PLAIN, 12));
+        JScrollPane scroll = new JScrollPane(area);
+        scroll.setPreferredSize(new java.awt.Dimension(560, 220));
+        JOptionPane.showMessageDialog(view, scroll, "Ocupación del salón", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private void volver(){
         view.dispose();
     }

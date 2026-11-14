@@ -1,6 +1,8 @@
 package model;
 
-public class Reserva {
+import tad.TADReserva;
+
+public class Reserva implements TADReserva {
 
     private int idReserva;
     private String cliente;

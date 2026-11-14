@@ -16,16 +16,18 @@ public class PlatoView extends JFrame {
     public final JButton btnEliminar   = button("ELIMINAR", TERRACOTA, TERRACOTA_HOVER);
     public final JButton btnDeshacer   = button("DESHACER", MOSTAZA, MOSTAZA_HOVER);
     public final JButton btnHistorial  = button("HISTORIAL", TAUPE, TAUPE_HOVER);
+    public final JButton btnArbol      = button("ÁRBOL", ROYAL_BLUE, ROYAL_BLUE_HOVER);
+    public final JButton btnABB        = button("ABB", ROYAL_BLUE, ROYAL_BLUE_HOVER);
     public final JButton btnVolver     = button("X", TERRACOTA, TERRACOTA_HOVER);
 
     public final DefaultTableModel modeloTabla;
-    private final JTable tabla;
+    public final JTable tabla;
 
     public PlatoView() {
         setTitle("Gestión de Platos - C&R OrderManager");
-        setSize(760,440);
+        setSize(1040,440);
         setLocationRelativeTo(null);
-        setMinimumSize(new Dimension(640, 380));
+        setMinimumSize(new Dimension(900, 380));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -76,13 +78,15 @@ public class PlatoView extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 16));
         panelBotones.setBackground(CREMA);
 
-        for (JButton b : new JButton[]{btnAgregar, btnActualizar, btnEliminar, btnDeshacer, btnHistorial}) {
+        for (JButton b : new JButton[]{btnAgregar, btnActualizar, btnEliminar, btnDeshacer, btnHistorial, btnArbol, btnABB}) {
             b.setPreferredSize(new Dimension(120, 40));
             panelBotones.add(b);
         }
 
         btnDeshacer.setToolTipText("Deshace la última operación (LIFO)");
         btnHistorial.setToolTipText("Muestra el historial de operaciones en la pila");
+        btnABB.setToolTipText("Árbol Binario de Búsqueda de platos por nombre");
+        btnArbol.setToolTipText("Muestra la carta como árbol binario y sus recorridos");
 
         card.add(panelBotones, BorderLayout.SOUTH);
         root.add(card, BorderLayout.CENTER);

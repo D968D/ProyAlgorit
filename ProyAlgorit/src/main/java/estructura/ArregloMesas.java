@@ -1,7 +1,6 @@
 package estructura;
 
 import model.Mesa;
-import java.util.Arrays;
 
 public class ArregloMesas {
 
@@ -58,8 +57,29 @@ public class ArregloMesas {
     }
 
 
+    /** Eliminación real: quita la mesa y corre hacia la izquierda las que estaban después. */
+    public boolean eliminar(int numeroMesa) {
+        for (int i = 0; i < cantidad; i++) {
+            if (mesas[i] != null && mesas[i].getNumeroMesa() == numeroMesa) {
+                for (int j = i; j < cantidad - 1; j++) {
+                    mesas[j] = mesas[j + 1];
+                }
+                mesas[cantidad - 1] = null;
+                cantidad--;
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Mesa[] recorrer() {
-        Mesa[] activas = new Mesa[cantidad];
+        int n = 0;
+        for (int i = 0; i < cantidad; i++) {
+            if (mesas[i] != null && !"INACTIVA".equalsIgnoreCase(mesas[i].getEstado())) {
+                n++;
+            }
+        }
+        Mesa[] activas = new Mesa[n];
         int idx = 0;
         for (int i = 0; i < cantidad; i++) {
             if (mesas[i] != null && !"INACTIVA".equalsIgnoreCase(mesas[i].getEstado())) {
@@ -67,7 +87,7 @@ public class ArregloMesas {
                 idx++;
             }
         }
-        return Arrays.copyOf(activas, idx);
+        return activas;
     }
 
 

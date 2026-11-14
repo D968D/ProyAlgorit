@@ -1,3 +1,4 @@
+
 package view;
 
 import javax.swing.*;
@@ -8,12 +9,39 @@ import static view.UIStyle.*;
 
 public class ReservaView extends JFrame {
 
-    public final JButton btnAgregar   = button("AGREGAR", IconoVector.Tipo.AGREGAR, VERDE_OLIVA, VERDE_HOVER);
-    public final JButton btnEliminar  = button("ELIMINAR", IconoVector.Tipo.ELIMINAR, TERRACOTA, TERRACOTA_HOVER);
-    public final JButton btnBuscar    = button("BUSCAR", IconoVector.Tipo.BUSCAR, NARANJA, NARANJA_HOVER);
-    public final JButton btnOrdenar   = button("ORDENAR", IconoVector.Tipo.ORDENAR, MOSTAZA, MOSTAZA_HOVER);
-    public final JButton btnHistorial = button("HISTORIAL", IconoVector.Tipo.HISTORIAL, TAUPE, TAUPE_HOVER);
-    public final JButton btnVolver    = button("X", TERRACOTA, TERRACOTA_HOVER);
+    public final JButton btnAgregar =
+            button("AGREGAR", IconoVector.Tipo.AGREGAR,
+                    VERDE_OLIVA, VERDE_HOVER);
+
+    public final JButton btnEliminar =
+            button("ELIMINAR", IconoVector.Tipo.ELIMINAR,
+                    TERRACOTA, TERRACOTA_HOVER);
+
+    public final JButton btnBuscar =
+            button("BUSCAR", IconoVector.Tipo.BUSCAR,
+                    NARANJA, NARANJA_HOVER);
+
+    public final JButton btnOrdenar =
+            button("ORDENAR", IconoVector.Tipo.ORDENAR,
+                    MOSTAZA, MOSTAZA_HOVER);
+
+    public final JButton btnHistorial =
+            button("HISTORIAL", IconoVector.Tipo.HISTORIAL,
+                    TAUPE, TAUPE_HOVER);
+
+    public final JButton btnVerCola =
+            button("VER COLA", IconoVector.Tipo.HISTORIAL,
+                    TAUPE, TAUPE_HOVER);
+
+    public final JButton btnAtenderCola =
+            button("ATENDER SIGUIENTE", IconoVector.Tipo.AGREGAR,
+                    VERDE_OLIVA, VERDE_HOVER);
+
+    public final JButton btnAVL =
+            button("ÁRBOL AVL", ROYAL_BLUE, ROYAL_BLUE_HOVER);
+
+    public final JButton btnVolver =
+            button("X", TERRACOTA, TERRACOTA_HOVER);
 
     public final DefaultTableModel modeloTabla;
     private final JTable tabla;
@@ -97,7 +125,8 @@ public class ReservaView extends JFrame {
 
         for (JButton b : new JButton[]{
                 btnAgregar, btnEliminar, btnBuscar,
-                btnOrdenar, btnHistorial
+                btnOrdenar, btnHistorial,
+                btnVerCola, btnAtenderCola, btnAVL
         }) {
             b.setPreferredSize(new Dimension(150, 40));
             panelBotones.add(b);

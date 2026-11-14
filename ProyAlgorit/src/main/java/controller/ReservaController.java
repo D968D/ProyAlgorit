@@ -2,12 +2,15 @@ package controller;
 
 import dao.MesaDAO;
 import dao.ReservaDAO;
+import estructura.ColaPrioridadReservas;
+import estructura.ColaReservas;
 import estructura.ListaDobleReservas;
 import estructura.ListaReservas;
 import model.Mesa;
 import model.Reserva;
 import view.AgregarReservaDialog;
 import view.ReservaView;
+import view.VisorArbolView;
 
 import javax.swing.*;
 import java.awt.Dimension;
@@ -31,6 +34,8 @@ public class ReservaController {
 
     private ListaReservas lista = new ListaReservas();
     private ListaDobleReservas listaDoble = new ListaDobleReservas();
+    private ColaReservas colaLlegada = new ColaReservas();
+    private ColaPrioridadReservas colaPrioridad = new ColaPrioridadReservas();
 
     public ReservaController(ReservaView view) {
         this.view = view;
@@ -42,6 +47,12 @@ public class ReservaController {
         view.btnBuscar.addActionListener(e -> buscar());
         view.btnOrdenar.addActionListener(e -> ordenar());
         view.btnHistorial.addActionListener(e -> mostrarHistorial());
+        view.btnVerCola.addActionListener(e -> verCola());
+        view.btnAtenderCola.addActionListener(e -> atenderSiguiente());
+        view.btnAVL.addActionListener(e -> new ArbolAVLController(
+                new VisorArbolView("Árbol AVL de Reservas",
+                        "Reservas por ID, factor de equilibrio y rotaciones", true),
+                this::cargarDesdeBD));
         view.btnVolver.addActionListener(e -> view.dispose());
 
         view.setVisible(true);
@@ -51,13 +62,18 @@ public class ReservaController {
     private void cargarDesdeBD() {
         lista = new ListaReservas();
         listaDoble = new ListaDobleReservas();
+        colaLlegada = new ColaReservas();
+        colaPrioridad = new ColaPrioridadReservas();
 
         try {
             for (Reserva r : reservaDAO.listarTodas()) {
                 lista.insertar(r);
                 listaDoble.insertar(r);
+                if ("Pendiente".equalsIgnoreCase(r.getEstado())) {
+                    colaLlegada.encolar(r);
+                    colaPrioridad.encolar(r);
+                }
             }
-            System.out.println("Completao");
         } catch (SQLException ex) {
             errorBD("No se pudieron cargar las reservas", ex);
         }
@@ -72,7 +88,6 @@ public class ReservaController {
                     r.getCantidadPersonas(), r.getIdMesa(), r.getEstado()
             });
         }
-        System.out.println("completed");
     }
 
     private void errorBD(String mensaje, SQLException ex) {
@@ -92,6 +107,8 @@ public class ReservaController {
                     dialog.getPersonas(), dialog.getMesa(), "Pendiente");
             lista.insertar(reserva);
             listaDoble.insertar(reserva);
+            colaLlegada.encolar(reserva);
+            colaPrioridad.encolar(reserva);
             cargarTabla();
         } catch (SQLException ex) {
             errorBD("No se pudo guardar la reserva", ex);
@@ -114,6 +131,8 @@ public class ReservaController {
             reservaDAO.eliminar(id);
             lista.eliminar(id);
             listaDoble.eliminar(id);
+            colaLlegada.eliminarPorId(id);
+            colaPrioridad.eliminarPorId(id);
             cargarTabla();
         } catch (SQLException ex) {
             errorBD("No se pudo eliminar la reserva", ex);
@@ -167,6 +186,40 @@ public class ReservaController {
         String mensaje = "RECORRIDO HACIA ADELANTE\n========================\n" + adelante
                 + "\nRECORRIDO HACIA ATRÁS\n=====================\n" + atras;
         mostrarTexto(mensaje, "Historial de Reservas", 650, 300);
+    }
+
+    /** Muestra las dos colas: la de llegada (FIFO) y la de atención (prioridad por fecha y hora). */
+    private void verCola() {
+        String texto = "ORDEN DE LLEGADA (cola FIFO)\n============================\n" + colaLlegada.recorrer()
+                + "\nORDEN DE ATENCIÓN (cola con prioridad: fecha y hora más próximas)\n"
+                + "=================================================================\n"
+                + colaPrioridad.recorrer();
+        mostrarTexto(texto, "Cola de reservas pendientes", 600, 320);
+    }
+
+    /** Atiende la reserva de mayor prioridad (la más próxima en el tiempo). */
+    private void atenderSiguiente() {
+        Reserva primera = colaPrioridad.primero();
+        if (primera == null) {
+            JOptionPane.showMessageDialog(view, "No hay reservas pendientes.");
+            return;
+        }
+        int opcion = JOptionPane.showConfirmDialog(view,
+                "¿Atender la reserva de " + primera.getCliente() + " (N° " + primera.getIdReserva() + ")?\n"
+                        + "Es la más próxima: " + primera.getFecha() + " " + primera.getHora(),
+                "Confirmar atención", JOptionPane.YES_NO_OPTION);
+        if (opcion != JOptionPane.YES_OPTION) {
+            return;
+        }
+        try {
+            reservaDAO.actualizarEstado(primera.getIdReserva(), "Atendida");
+            colaPrioridad.desencolar();
+            colaLlegada.eliminarPorId(primera.getIdReserva());
+            cargarDesdeBD();
+            JOptionPane.showMessageDialog(view, "La reserva fue atendida correctamente.");
+        } catch (SQLException ex) {
+            errorBD("No se pudo atender la reserva", ex);
+        }
     }
 
     private void mostrarTexto(String texto, String titulo, int ancho, int alto) {

@@ -1,7 +1,6 @@
 package estructura;
 
 import model.Mesa;
-import java.util.Arrays;
 
 public class MatrizOcupacion {
 
@@ -13,9 +12,7 @@ public class MatrizOcupacion {
         this.zonas = zonas;
         this.mesasPorZona = mesasPorZona;
         this.estados = new String[zonas.length][mesasPorZona];
-        for (String[] fila : estados) {
-            Arrays.fill(fila, "LIBRE");
-        }
+        limpiar();
     }
 
     /**
@@ -30,8 +27,17 @@ public class MatrizOcupacion {
             int idx = mesa.getNumeroMesa() - 1;
             int zonaIdx = idx / mesasPorZona;
             int columna = idx % mesasPorZona;
-            if (zonaIdx >= 0 && zonaIdx < zonas.length) {
+            if (idx >= 0 && zonaIdx >= 0 && zonaIdx < zonas.length) {
                 estados[zonaIdx][columna] = mesa.getEstado();
+            }
+        }
+    }
+
+    /** Deja todas las celdas en LIBRE antes de volver a cargar. */
+    public void limpiar() {
+        for (int i = 0; i < estados.length; i++) {
+            for (int j = 0; j < estados[i].length; j++) {
+                estados[i][j] = "LIBRE";
             }
         }
     }

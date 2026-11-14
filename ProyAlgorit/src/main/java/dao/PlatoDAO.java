@@ -59,6 +59,41 @@ public class PlatoDAO {
         return false;
     }
 
+    /** Reinserta un plato con su ID original (usado por DESHACER de un ELIMINAR). */
+    public boolean restaurar(Plato plato) {
+        String sql = "INSERT INTO platos (idplato, nombre, precio, categoria) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = ConexionDB.getConexion();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setInt(1, plato.getIdPlato());
+            pst.setString(2, plato.getNombre());
+            pst.setDouble(3, plato.getPrecio());
+            pst.setString(4, plato.getCategoria());
+            return pst.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Error al restaurar plato: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /** true si ya hay un plato con ese nombre (sin distinguir mayúsculas). */
+    public boolean existeNombre(String nombre) {
+        String sql = "SELECT 1 FROM platos WHERE lower(nombre) = lower(?)";
+
+        try (Connection conn = ConexionDB.getConexion();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, nombre.trim());
+            try (ResultSet rs = pst.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al validar nombre de plato: " + e.getMessage());
+            return false;
+        }
+    }
+
     /** Actualiza solo el precio (como en la imagen del diálogo de Actualizar). */
     public boolean actualizarPrecio(int idPlato, double nuevoPrecio) {
         String sql = "UPDATE platos SET precio = ? WHERE idplato = ?";
