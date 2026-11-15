@@ -10,7 +10,6 @@ public class Pedido {
     private String estado;
     private String metodoPago;
     private List<DetallePedido> detalles;
-
     public Pedido(){};
 
     public Pedido(int idPedido, int numMesa, String dni, String fechaHora, double total, String estado,
