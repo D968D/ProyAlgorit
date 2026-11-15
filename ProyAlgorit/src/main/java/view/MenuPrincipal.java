@@ -1,6 +1,7 @@
 package view;
 
 import controller.MesaController;
+import controller.PedidoController;
 import controller.PlatoController;
 import controller.ReservaController;
 
@@ -20,8 +21,8 @@ public class MenuPrincipal extends JFrame {
 
     public MenuPrincipal() {
         setTitle("C&R OrderManager - Menú Principal");
-        setSize(920, 520);
-        setMinimumSize(new Dimension(800, 460));
+        setSize(1020, 580);
+        setMinimumSize(new Dimension(1010, 560));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -35,6 +36,7 @@ public class MenuPrincipal extends JFrame {
         TarjetaMenu mesas = new TarjetaMenu("Mesas", "Disponibilidad y capacidad del salón", IconoVector.Tipo.MESA);
         TarjetaMenu platos = new TarjetaMenu("Platos", "Carta, precios y categorías", IconoVector.Tipo.PLATO);
         TarjetaMenu reservas = new TarjetaMenu("Reservas", "Reservas del salón y cola de atención", IconoVector.Tipo.RESERVA);
+        TarjetaMenu pedidos = new TarjetaMenu("Pedidos", "Pedidos registrados y sus estados", IconoVector.Tipo.HISTORIAL);
 
         mesas.addActionListener(e -> {
             MesaView mesaView = new MesaView();
@@ -45,12 +47,14 @@ public class MenuPrincipal extends JFrame {
             new PlatoController(platoView);
         });
         reservas.addActionListener(e -> new ReservaController(new ReservaView()));
+        pedidos.addActionListener(e -> new PedidoController(new PedidoView()));
 
-        JPanel rejilla = new JPanel(new GridLayout(1, 3, 20, 0));
+        JPanel rejilla = new JPanel(new GridLayout(1, 4, 20, 0));
         rejilla.setOpaque(false);
         rejilla.add(mesas);
         rejilla.add(platos);
         rejilla.add(reservas);
+        rejilla.add(pedidos);
 
         JPanel centro = new JPanel(new GridBagLayout());
         centro.setOpaque(false);

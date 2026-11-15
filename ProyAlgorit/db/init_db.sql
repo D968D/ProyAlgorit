@@ -47,10 +47,11 @@ CREATE TABLE reservas (
 CREATE TABLE pedidos (
     idpedido    SERIAL PRIMARY KEY,
     numero_mesa INT REFERENCES mesas(numero_mesa),
-    idusuario   INT REFERENCES usuarios(idusuario),
+    dni   VARCHAR(8),
     fecha_hora  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total       NUMERIC(10,2),
-    estado      VARCHAR(20) DEFAULT 'PENDIENTE',
+    estado      VARCHAR(20) DEFAULT 'PENDIENTE'
+                CHECK (estado IN ('PENDIENTE', 'ATENDIDO')),
     metodo_pago VARCHAR(100)
 );
 
@@ -60,7 +61,7 @@ CREATE TABLE detalle_pedido (
     idplato     INT REFERENCES platos(idplato),
     cantidad    INT NOT NULL,
     precio      NUMERIC(10,2) NOT NULL,
-    observacion VARCHAR(250)
+    subtotal    NUMERIC(10,2) NOT NULL
 );
 
 -- =========================================================

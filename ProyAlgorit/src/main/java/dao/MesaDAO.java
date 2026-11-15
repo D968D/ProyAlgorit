@@ -34,6 +34,31 @@ public class MesaDAO {
         return lista;
     }
 
+    public List<Mesa> listarDisponibles() throws SQLException {
+        List<Mesa> lista = new ArrayList<>();
+        String sql = "SELECT numero_mesa, capacidad, estado FROM mesas "
+                + "WHERE UPPER(TRIM(estado)) = 'LIBRE' "
+                + "AND NOT EXISTS (SELECT 1 FROM pedidos p "
+                + "WHERE p.numero_mesa = mesas.numero_mesa "
+                + "AND UPPER(TRIM(p.estado)) = 'PENDIENTE') "
+                + "ORDER BY numero_mesa";
+
+        try (Connection conn = ConexionDB.getConexion();
+             PreparedStatement pst = conn.prepareStatement(sql);
+             ResultSet rs = pst.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(new Mesa(
+                        rs.getInt("numero_mesa"),
+                        rs.getInt("capacidad"),
+                        rs.getString("estado")
+                ));
+            }
+        }
+
+        return lista;
+    }
+
     public boolean actualizarEstado(int numeroMesa, String nuevoEstado) {
         String sql = "UPDATE mesas SET estado = ? WHERE numero_mesa = ?";
 
