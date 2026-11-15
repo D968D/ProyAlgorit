@@ -10,7 +10,7 @@ public class IconoVector implements Icon {
     public enum Tipo {
         MESA, PLATO, RESERVA, SALIR,
         AGREGAR, ELIMINAR, BUSCAR, ORDENAR, HISTORIAL,
-        VOLVER, EDITAR, DESHACER, ARBOL, COLA, OCUPACION, ATENDER, INSERTAR_NODO, DEMO, DATOS
+        VOLVER, EDITAR, DESHACER, ARBOL, COLA, OCUPACION, ATENDER, INSERTAR_NODO, DEMO, DATOS, BOLETA
     }
 
     private final Tipo tipo;
@@ -197,6 +197,22 @@ public class IconoVector implements Icon {
                 medio.moveTo(4, 12);
                 medio.curveTo(4, 15, 20, 15, 20, 12);
                 g2.draw(medio);
+            }
+            case BOLETA -> {
+                Path2D hoja = new Path2D.Float();                         // hoja con borde inferior en zigzag
+                hoja.moveTo(5, 3);
+                hoja.lineTo(19, 3);
+                hoja.lineTo(19, 21);
+                hoja.lineTo(16.5, 19);
+                hoja.lineTo(14, 21);
+                hoja.lineTo(11.5, 19);
+                hoja.lineTo(9, 21);
+                hoja.lineTo(7, 19);
+                hoja.lineTo(5, 21);
+                hoja.closePath();
+                g2.draw(hoja);
+                g2.draw(new Line2D.Float(8.5f, 8, 15.5f, 8));
+                g2.draw(new Line2D.Float(8.5f, 12, 15.5f, 12));
             }
             case HISTORIAL -> {
                 g2.draw(new Ellipse2D.Float(3, 3, 18, 18));               // reloj

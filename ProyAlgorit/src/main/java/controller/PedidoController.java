@@ -9,10 +9,13 @@ import model.Pedido;
 import view.AgregarPedidoDialog;
 import view.PedidoView;
 import view.UIStyle;
+import util.BoletaPDF;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +38,7 @@ public class PedidoController {
         view.btnActualizar.addActionListener(e -> actualizarEstado());
         view.btnEliminar.addActionListener(e -> eliminar());
         view.btnBuscar.addActionListener(e -> buscar());
+        view.btnBoleta.addActionListener(e -> generarBoleta());
         view.btnVerTodos.addActionListener(e -> mostrarTodosLosPedidos());
         view.btnArbol.addActionListener(e -> abrirVisorArbol());
         view.addPedidoDoubleClickListener(this::mostrarDetallesPedido);
@@ -194,6 +198,59 @@ public class PedidoController {
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(view, "Ingrese un ID válido.");
         }
+    }
+
+    private void generarBoleta() {
+        int fila = view.getFilaSeleccionada();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(view, "Seleccione un pedido de la tabla.");
+            return;
+        }
+
+        int id = (int) view.modeloTabla.getValueAt(fila, 0);
+        Pedido pedido = buscarPorIdEnArbol(id);
+        if (pedido == null) {
+            cargarDesdeBD();
+            return;
+        }
+
+        try {
+            List<DetallePedido> detalles = obtenerDetallesPorPedido(id);
+            if (detalles.isEmpty()) {
+                JOptionPane.showMessageDialog(view,
+                        "El pedido N° " + id + " aún no tiene platos. Agrégalos para emitir la boleta.");
+                return;
+            }
+
+            File carpeta = carpetaBoletas();
+            File destino = new File(carpeta, "Boleta_" + BoletaPDF.numeroBoleta(id) + ".pdf");
+            BoletaPDF.generar(pedido, detalles, destino);
+
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().open(destino);
+            } else {
+                JOptionPane.showMessageDialog(view, "Boleta guardada en:\n" + destino.getAbsolutePath());
+            }
+        } catch (SQLException ex) {
+            errorBD("No se pudieron cargar los platos del pedido", ex);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(view, "No se pudo generar la boleta:\n" + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /** Carpeta donde se guardan las boletas: Documentos/Boletas (se crea si no existe). */
+    private File carpetaBoletas() throws IOException {
+        File documentos = new File(System.getProperty("user.home"), "Documents");
+        if (!documentos.isDirectory()) {
+            documentos = new File(System.getProperty("user.home"), "Documentos");
+        }
+        File base = documentos.isDirectory() ? documentos : new File(System.getProperty("user.home"));
+        File carpeta = new File(base, "Boletas");
+        if (!carpeta.isDirectory() && !carpeta.mkdirs()) {
+            throw new IOException("No se pudo crear la carpeta " + carpeta.getAbsolutePath());
+        }
+        return carpeta;
     }
 
     public Pedido buscarPorIdEnArbol(int idPedido) {

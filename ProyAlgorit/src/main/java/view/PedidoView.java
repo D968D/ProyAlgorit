@@ -15,6 +15,7 @@ public class PedidoView extends JFrame {
     public final JButton btnAgregarPlatos = secundario("Agregar platos", IconoVector.Tipo.AGREGAR);
     public final JButton btnActualizar = secundario("Actualizar estado", IconoVector.Tipo.EDITAR);
     public final JButton btnEliminar = peligro("Eliminar", IconoVector.Tipo.ELIMINAR);
+    public final JButton btnBoleta = secundario("Boleta PDF", IconoVector.Tipo.BOLETA);
     public final JButton btnBuscar = secundario("Buscar", IconoVector.Tipo.BUSCAR);
     public final JButton btnArbol = discreto("Árbol ABB", IconoVector.Tipo.ARBOL);
     public final JButton btnVerTodos = discreto("Todos los pedidos", IconoVector.Tipo.HISTORIAL);
@@ -37,7 +38,7 @@ public class PedidoView extends JFrame {
         superior.setLayout(new BoxLayout(superior, BoxLayout.Y_AXIS));
         superior.add(encabezado("Pedidos", "Pedidos registrados y sus estados", btnVolver));
         superior.add(barraAcciones(
-                new JComponent[]{btnAgregar, btnAgregarPlatos, btnActualizar, btnEliminar, btnBuscar},
+                new JComponent[]{btnAgregar, btnAgregarPlatos, btnActualizar, btnEliminar, btnBuscar, btnBoleta},
                 new JComponent[]{btnVerTodos, btnArbol}));
         root.add(superior, BorderLayout.NORTH);
 
