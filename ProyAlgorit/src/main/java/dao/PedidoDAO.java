@@ -127,6 +127,7 @@ public class PedidoDAO {
                     }
                 }
 
+                actualizarEstadoMesa(conn, pedido.getNumMesa());
                 conn.commit();
                 return true;
             } catch (SQLException ex) {
@@ -228,16 +229,56 @@ public class PedidoDAO {
                 + "total = ?, metodo_pago = ? WHERE idpedido = ?";
         String estado = normalizarEstado(pedido.getEstado());
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement pst = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.getConexion()) {
+            conn.setAutoCommit(false);
+            try {
+                int mesaAnterior;
+                String estadoAnterior;
+                try (PreparedStatement pst = conn.prepareStatement(
+                        "SELECT numero_mesa, estado FROM pedidos WHERE idpedido = ? FOR UPDATE")) {
+                    pst.setInt(1, pedido.getIdPedido());
+                    try (ResultSet rs = pst.executeQuery()) {
+                        if (!rs.next()) {
+                            conn.rollback();
+                            return false;
+                        }
+                        mesaAnterior = rs.getInt("numero_mesa");
+                        estadoAnterior = rs.getString("estado");
+                    }
+                }
 
-            pst.setInt(1, pedido.getNumMesa());
-            pst.setString(2, pedido.getDni());
-            pst.setString(3, estado);
-            pst.setDouble(4, pedido.getTotal());
-            pst.setString(5, pedido.getMetodoPago());
-            pst.setInt(6, pedido.getIdPedido());
-            return pst.executeUpdate() > 0;
+                bloquearMesas(conn, mesaAnterior, pedido.getNumMesa());
+
+                try (PreparedStatement pst = conn.prepareStatement(sql)) {
+                    pst.setInt(1, pedido.getNumMesa());
+                    pst.setString(2, pedido.getDni());
+                    pst.setString(3, estado);
+                    pst.setDouble(4, pedido.getTotal());
+                    pst.setString(5, pedido.getMetodoPago());
+                    pst.setInt(6, pedido.getIdPedido());
+                    if (pst.executeUpdate() == 0) {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+
+                boolean estadoAnteriorPendiente =
+                        estadoAnterior != null
+                                && "PENDIENTE".equalsIgnoreCase(estadoAnterior.trim());
+                boolean estadoNuevoPendiente = "PENDIENTE".equals(estado);
+                if (estadoAnteriorPendiente || estadoNuevoPendiente) {
+                    actualizarEstadoMesa(conn, mesaAnterior);
+                    if (pedido.getNumMesa() != mesaAnterior) {
+                        actualizarEstadoMesa(conn, pedido.getNumMesa());
+                    }
+                }
+
+                conn.commit();
+                return true;
+            } catch (SQLException ex) {
+                rollback(conn, ex);
+                throw ex;
+            }
         }
     }
 
@@ -245,16 +286,22 @@ public class PedidoDAO {
         try (Connection conn = ConexionDB.getConexion()) {
             conn.setAutoCommit(false);
             try {
+                int numeroMesa;
+                String estado;
                 try (PreparedStatement pst = conn.prepareStatement(
-                        "SELECT 1 FROM pedidos WHERE idpedido = ? FOR UPDATE")) {
+                        "SELECT numero_mesa, estado FROM pedidos WHERE idpedido = ? FOR UPDATE")) {
                     pst.setInt(1, idPedido);
                     try (ResultSet rs = pst.executeQuery()) {
                         if (!rs.next()) {
                             conn.rollback();
                             return false;
                         }
+                        numeroMesa = rs.getInt("numero_mesa");
+                        estado = rs.getString("estado");
                     }
                 }
+
+                bloquearMesas(conn, numeroMesa);
 
                 try (PreparedStatement pst = conn.prepareStatement(
                         "DELETE FROM detalle_pedido WHERE idpedido = ?")) {
@@ -266,12 +313,54 @@ public class PedidoDAO {
                         "DELETE FROM pedidos WHERE idpedido = ?")) {
                     pst.setInt(1, idPedido);
                     boolean eliminado = pst.executeUpdate() > 0;
+                    if (eliminado && estado != null
+                            && "PENDIENTE".equalsIgnoreCase(estado.trim())) {
+                        actualizarEstadoMesa(conn, numeroMesa);
+                    }
                     conn.commit();
                     return eliminado;
                 }
             } catch (SQLException ex) {
                 rollback(conn, ex);
                 throw ex;
+            }
+        }
+    }
+
+    private void bloquearMesas(Connection conn, int... numerosMesa) throws SQLException {
+        int primeraMesa = numerosMesa[0];
+        int segundaMesa = numerosMesa.length > 1 ? numerosMesa[1] : primeraMesa;
+        if (segundaMesa < primeraMesa) {
+            int temporal = primeraMesa;
+            primeraMesa = segundaMesa;
+            segundaMesa = temporal;
+        }
+
+        try (PreparedStatement pst = conn.prepareStatement(
+                "SELECT numero_mesa FROM mesas WHERE numero_mesa = ? FOR UPDATE")) {
+            pst.setInt(1, primeraMesa);
+            try (ResultSet rs = pst.executeQuery()) {
+                rs.next();
+            }
+            if (segundaMesa != primeraMesa) {
+                pst.setInt(1, segundaMesa);
+                try (ResultSet rs = pst.executeQuery()) {
+                    rs.next();
+                }
+            }
+        }
+    }
+
+    private void actualizarEstadoMesa(Connection conn, int numeroMesa) throws SQLException {
+        String sql = "UPDATE mesas SET estado = CASE WHEN EXISTS ("
+                + "SELECT 1 FROM pedidos WHERE numero_mesa = ? "
+                + "AND UPPER(TRIM(estado)) = 'PENDIENTE') "
+                + "THEN 'OCUPADO' ELSE 'LIBRE' END WHERE numero_mesa = ?";
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setInt(1, numeroMesa);
+            pst.setInt(2, numeroMesa);
+            if (pst.executeUpdate() == 0) {
+                throw new SQLException("No se encontró la mesa " + numeroMesa + " para actualizar su estado.");
             }
         }
     }

@@ -25,19 +25,20 @@ public class MatrizOcupacion {
                 continue;
             }
             int idx = mesa.getNumeroMesa() - 1;
+            if (idx < 0 || idx >= zonas.length * mesasPorZona) {
+                continue;
+            }
             int zonaIdx = idx / mesasPorZona;
             int columna = idx % mesasPorZona;
-            if (idx >= 0 && zonaIdx >= 0 && zonaIdx < zonas.length) {
-                estados[zonaIdx][columna] = mesa.getEstado();
-            }
+            estados[zonaIdx][columna] = mesa.getEstado();
         }
     }
 
-    /** Deja todas las celdas en LIBRE antes de volver a cargar. */
+    /** Vacía todas las celdas antes de volver a cargar las mesas existentes. */
     public void limpiar() {
         for (int i = 0; i < estados.length; i++) {
             for (int j = 0; j < estados[i].length; j++) {
-                estados[i][j] = "LIBRE";
+                estados[i][j] = null;
             }
         }
     }
@@ -55,9 +56,17 @@ public class MatrizOcupacion {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < zonas.length; i++) {
             sb.append(zonas[i]).append(": ");
+            boolean hayMesas = false;
             for (int j = 0; j < estados[i].length; j++) {
+                if (estados[i][j] == null) {
+                    continue;
+                }
                 int numeroMesa = i * mesasPorZona + j + 1;
                 sb.append("[M").append(numeroMesa).append(":").append(estados[i][j]).append("] ");
+                hayMesas = true;
+            }
+            if (!hayMesas) {
+                sb.append("(sin mesas)");
             }
             sb.append(System.lineSeparator());
         }

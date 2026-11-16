@@ -18,7 +18,7 @@ import static view.UIStyle.*;
 public class AgregarPedidoDialog extends JDialog {
 
     private static final String[] METODOS_PAGO = {
-            "Tarjeta débito", "Tarjeta crédito", "Yape/Plin"
+            "Tarjeta débito", "Tarjeta crédito", "Yape/Plin", "Efectivo"
     };
 
     private final PedidoController controller;

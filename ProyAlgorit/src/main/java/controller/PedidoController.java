@@ -7,11 +7,15 @@ import model.DetallePedido;
 import model.Mesa;
 import model.Pedido;
 import view.AgregarPedidoDialog;
+import view.IconoVector;
+import view.PanelArbolGenerico;
+import view.PanelArbolGenerico.Dibujable;
 import view.PedidoView;
 import view.UIStyle;
 import util.BoletaPDF;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.File;
@@ -376,28 +380,31 @@ public class PedidoController {
     }
 
     private void abrirVisorArbol() {
-        JDialog visor = new JDialog(view, "Árbol ABB de Pedidos (por ID)", true);
-        JPanel root = UIStyle.raiz(24, 28, 24, 28);
+        JFrame visor = new JFrame("Árbol ABB de Pedidos - C&R OrderManager");
+        visor.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        JPanel root = UIStyle.raiz();
         JPanel superior = new JPanel();
         superior.setOpaque(false);
         superior.setLayout(new BoxLayout(superior, BoxLayout.Y_AXIS));
-        UIStyle.RoundedButton cerrar = UIStyle.secundario("Cerrar", null);
-        cerrar.addActionListener(e -> visor.dispose());
+        UIStyle.RoundedButton volver = UIStyle.botonVolver();
+        volver.addActionListener(e -> visor.dispose());
         superior.add(UIStyle.encabezado(
-                "Árbol ABB de Pedidos", "Pedidos pendientes ordenados por ID", cerrar));
+                "Árbol ABB de Pedidos", "Pedidos pendientes ordenados por ID", volver));
 
-        JTextArea salidaRecorrido = new JTextArea(3, 60);
+        JTextArea salidaRecorrido = new JTextArea(5, 40);
         salidaRecorrido.setEditable(false);
         salidaRecorrido.setLineWrap(true);
         salidaRecorrido.setWrapStyleWord(true);
-        salidaRecorrido.setFont(UIStyle.FONT_CAMPO);
+        salidaRecorrido.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
         salidaRecorrido.setForeground(UIStyle.TINTA);
         salidaRecorrido.setBackground(UIStyle.SUPERFICIE);
-        salidaRecorrido.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
+        salidaRecorrido.setBorder(new EmptyBorder(12, 16, 12, 16));
+        salidaRecorrido.setText("ABB cargado: " + arbolPedidos.contarNodos() + " pedido(s), altura "
+                + arbolPedidos.altura() + ".");
 
-        UIStyle.RoundedButton btnPreOrden = UIStyle.secundario("Preorden", null);
-        UIStyle.RoundedButton btnInOrden = UIStyle.secundario("Inorden", null);
-        UIStyle.RoundedButton btnPostOrden = UIStyle.secundario("Postorden", null);
+        UIStyle.RoundedButton btnPreOrden = UIStyle.discreto("Preorden", IconoVector.Tipo.ARBOL);
+        UIStyle.RoundedButton btnInOrden = UIStyle.discreto("Inorden", IconoVector.Tipo.ARBOL);
+        UIStyle.RoundedButton btnPostOrden = UIStyle.discreto("Postorden", IconoVector.Tipo.ARBOL);
         btnPreOrden.addActionListener(e -> mostrarRecorrido(
                 "Preorden", arbolPedidos.recorridoPreOrden(), salidaRecorrido));
         btnInOrden.addActionListener(e -> mostrarRecorrido(
@@ -405,90 +412,70 @@ public class PedidoController {
         btnPostOrden.addActionListener(e -> mostrarRecorrido(
                 "Postorden", arbolPedidos.recorridoPostOrden(), salidaRecorrido));
         superior.add(UIStyle.barraAcciones(
-                new JComponent[]{btnPreOrden, btnInOrden, btnPostOrden}, new JComponent[]{}));
+                new JComponent[]{}, new JComponent[]{btnPreOrden, btnInOrden, btnPostOrden}));
         root.add(superior, BorderLayout.NORTH);
 
-        JPanel lienzo = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                if (arbolPedidos.estaVacio()) {
-                    g2.setColor(UIStyle.TINTA_SUAVE);
-                    g2.setFont(UIStyle.FONT_SUB);
-                    g2.drawString("No hay pedidos pendientes.", 24, 32);
-                } else {
-                    dibujarNodo(g2, arbolPedidos.getRaiz(), getWidth() / 2, 45, getWidth() / 4);
-                }
-                g2.dispose();
-            }
-
-            private void dibujarNodo(Graphics2D g2, ArbolABBPedidos.NodoPedido nodo,
-                                     int x, int y, int offset) {
-                if (nodo == null) {
-                    return;
-                }
-
-                int radio = 24;
-                int separacionVertical = 75;
-                if (nodo.izquierdo != null) {
-                    int xIzquierdo = x - Math.max(offset, 35);
-                    int yHijo = y + separacionVertical;
-                    g2.setColor(new Color(120, 130, 140));
-                    g2.drawLine(x, y, xIzquierdo, yHijo);
-                    dibujarNodo(g2, nodo.izquierdo, xIzquierdo, yHijo, offset / 2);
-                }
-                if (nodo.derecho != null) {
-                    int xDerecho = x + Math.max(offset, 35);
-                    int yHijo = y + separacionVertical;
-                    g2.setColor(new Color(120, 130, 140));
-                    g2.drawLine(x, y, xDerecho, yHijo);
-                    dibujarNodo(g2, nodo.derecho, xDerecho, yHijo, offset / 2);
-                }
-
-                g2.setColor(new Color(44, 62, 80));
-                g2.fillOval(x - radio, y - radio, radio * 2, radio * 2);
-                g2.setColor(Color.WHITE);
-                g2.setFont(new Font("SansSerif", Font.BOLD, 12));
-                String texto = "#" + nodo.dato.getIdPedido();
-                FontMetrics metricas = g2.getFontMetrics();
-                g2.drawString(texto, x - metricas.stringWidth(texto) / 2, y + 4);
-
-                g2.setColor(new Color(52, 73, 94));
-                g2.setFont(new Font("SansSerif", Font.PLAIN, 11));
-                String mesa = "Mesa " + nodo.dato.getNumMesa();
-                g2.drawString(mesa, x - g2.getFontMetrics().stringWidth(mesa) / 2, y + radio + 14);
-            }
-        };
-
-        lienzo.setBackground(Color.WHITE);
-        lienzo.setPreferredSize(new Dimension(820, 360));
-        JScrollPane arbolScroll = new JScrollPane(lienzo);
+        PanelArbolGenerico panelArbol = new PanelArbolGenerico();
+        panelArbol.actualizar(envolverPedido(arbolPedidos.getRaiz()), null);
+        JScrollPane arbolScroll = new JScrollPane(panelArbol);
         arbolScroll.setBorder(BorderFactory.createEmptyBorder());
         arbolScroll.getViewport().setBackground(UIStyle.SUPERFICIE);
         UIStyle.RoundedPanel tarjetaArbol = UIStyle.tarjeta();
         tarjetaArbol.add(arbolScroll, BorderLayout.CENTER);
         root.add(tarjetaArbol, BorderLayout.CENTER);
 
-        JPanel panelSalida = new JPanel(new BorderLayout(0, 7));
-        panelSalida.setOpaque(false);
-        panelSalida.add(UIStyle.etiqueta("Recorrido seleccionado"), BorderLayout.NORTH);
         JScrollPane salidaScroll = new JScrollPane(salidaRecorrido);
-        salidaScroll.setPreferredSize(new Dimension(820, 70));
         salidaScroll.setBorder(BorderFactory.createEmptyBorder());
         salidaScroll.getViewport().setBackground(UIStyle.SUPERFICIE);
         UIStyle.RoundedPanel tarjetaSalida = UIStyle.tarjeta();
         tarjetaSalida.add(salidaScroll, BorderLayout.CENTER);
-        panelSalida.add(tarjetaSalida, BorderLayout.CENTER);
-        panelSalida.setBorder(BorderFactory.createEmptyBorder(14, 0, 0, 0));
-        root.add(panelSalida, BorderLayout.SOUTH);
+        JPanel sur = new JPanel(new BorderLayout());
+        sur.setOpaque(false);
+        sur.setBorder(new EmptyBorder(16, 0, 0, 0));
+        sur.add(tarjetaSalida, BorderLayout.CENTER);
+        root.add(sur, BorderLayout.SOUTH);
 
         visor.setContentPane(root);
-        visor.setSize(900, 650);
-        visor.setMinimumSize(new Dimension(780, 560));
-        visor.setLocationRelativeTo(view);
+        visor.setSize(940, 740);
+        visor.setMinimumSize(new Dimension(900, 620));
+        visor.setLocationRelativeTo(null);
+        UIStyle.activarEscalado(visor);
         visor.setVisible(true);
+    }
+
+    private Dibujable envolverPedido(ArbolABBPedidos.NodoPedido nodo) {
+        if (nodo == null) {
+            return null;
+        }
+        Dibujable izquierdo = envolverPedido(nodo.izquierdo);
+        Dibujable derecho = envolverPedido(nodo.derecho);
+        Pedido pedido = nodo.dato;
+        return new Dibujable() {
+            @Override
+            public String id() {
+                return String.valueOf(pedido.getIdPedido());
+            }
+
+            @Override
+            public String nombre() {
+                return "Mesa " + pedido.getNumMesa();
+            }
+
+            @Override
+            public String extra() {
+                return null;
+            }
+
+            @Override
+            public Dibujable izquierdo() {
+                return izquierdo;
+            }
+
+            @Override
+            public Dibujable derecho() {
+                return derecho;
+            }
+        };
     }
 
     private void mostrarRecorrido(String nombre, List<Pedido> recorrido, JTextArea salida) {
