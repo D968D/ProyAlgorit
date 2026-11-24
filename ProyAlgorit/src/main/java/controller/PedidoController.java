@@ -2,7 +2,7 @@ package controller;
 
 import dao.PedidoDAO;
 import dao.MesaDAO;
-import estructura.ArbolABBPedidos;
+import estructura.ArbolAVLPedidos;
 import model.DetallePedido;
 import model.Mesa;
 import model.Pedido;
@@ -29,7 +29,7 @@ public class PedidoController {
     private final PedidoView view;
     private final PedidoDAO pedidoDAO = new PedidoDAO();
     private final MesaDAO mesaDAO = new MesaDAO();
-    private ArbolABBPedidos arbolPedidos = new ArbolABBPedidos();
+    private ArbolAVLPedidos arbolPedidos = new ArbolAVLPedidos();
     private List<Pedido> pedidosVisibles = new ArrayList<>();
 
     public PedidoController(PedidoView view) {
@@ -52,7 +52,7 @@ public class PedidoController {
     }
 
     private void cargarDesdeBD() {
-        arbolPedidos = new ArbolABBPedidos();
+        arbolPedidos = new ArbolAVLPedidos();
         try {
             pedidosVisibles = pedidoDAO.listarTodos();
             for (Pedido pedido : pedidosVisibles) {
@@ -380,7 +380,7 @@ public class PedidoController {
     }
 
     private void abrirVisorArbol() {
-        JFrame visor = new JFrame("Árbol ABB de Pedidos - C&R OrderManager");
+        JFrame visor = new JFrame("Árbol AVL de Pedidos - C&R OrderManager");
         visor.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         JPanel root = UIStyle.raiz();
         JPanel superior = new JPanel();
@@ -389,7 +389,7 @@ public class PedidoController {
         UIStyle.RoundedButton volver = UIStyle.botonVolver();
         volver.addActionListener(e -> visor.dispose());
         superior.add(UIStyle.encabezado(
-                "Árbol ABB de Pedidos", "Pedidos pendientes ordenados por ID", volver));
+                "Árbol AVL de Pedidos", "Pedidos ordenados y balanceados por ID", volver));
 
         JTextArea salidaRecorrido = new JTextArea(5, 40);
         salidaRecorrido.setEditable(false);
@@ -399,7 +399,7 @@ public class PedidoController {
         salidaRecorrido.setForeground(UIStyle.TINTA);
         salidaRecorrido.setBackground(UIStyle.SUPERFICIE);
         salidaRecorrido.setBorder(new EmptyBorder(12, 16, 12, 16));
-        salidaRecorrido.setText("ABB cargado: " + arbolPedidos.contarNodos() + " pedido(s), altura "
+        salidaRecorrido.setText("AVL cargado: " + arbolPedidos.contarNodos() + " pedido(s), altura "
                 + arbolPedidos.altura() + ".");
 
         UIStyle.RoundedButton btnPreOrden = UIStyle.discreto("Preorden", IconoVector.Tipo.ARBOL);
@@ -443,7 +443,7 @@ public class PedidoController {
         visor.setVisible(true);
     }
 
-    private Dibujable envolverPedido(ArbolABBPedidos.NodoPedido nodo) {
+    private Dibujable envolverPedido(ArbolAVLPedidos.NodoPedido nodo) {
         if (nodo == null) {
             return null;
         }
@@ -463,7 +463,7 @@ public class PedidoController {
 
             @Override
             public String extra() {
-                return null;
+                return "FE=" + arbolPedidos.factorEquilibrio(nodo);
             }
 
             @Override

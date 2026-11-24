@@ -17,7 +17,7 @@ public class PedidoView extends JFrame {
     public final JButton btnEliminar = peligro("Eliminar", IconoVector.Tipo.ELIMINAR);
     public final JButton btnBoleta = secundario("Boleta PDF", IconoVector.Tipo.BOLETA);
     public final JButton btnBuscar = secundario("Buscar", IconoVector.Tipo.BUSCAR);
-    public final JButton btnArbol = discreto("Árbol ABB", IconoVector.Tipo.ARBOL);
+    public final JButton btnArbol = discreto("Árbol AVL", IconoVector.Tipo.ARBOL);
     public final JButton btnVerTodos = discreto("Todos los pedidos", IconoVector.Tipo.HISTORIAL);
     public final JButton btnVolver = botonVolver();
 

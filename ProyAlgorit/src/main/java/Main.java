@@ -5,7 +5,6 @@ import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
-
         SwingUtilities.invokeLater(() -> {
             UIStyle.instalarTema();
             LoginView login = new LoginView();

@@ -10,13 +10,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class ConexionDB {
-
-    // Valores por defecto (RDS en la nube). Se pueden sobrescribir con
-    // src/main/resources/db.properties o con variables de entorno.
-    private static String url = "jdbc:postgresql://restaurante-db.canoy6a4yl8c.us-east-1.rds.amazonaws.com:5432/cordonrosadb";
-    private static String user = "postgres";
-    private static String pass = "algortimos123";
-
     public static Connection getConexion() throws SQLException {
         Connection conn = null;
         Properties config = new Properties();
